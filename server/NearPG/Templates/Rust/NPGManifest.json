@@ -1,0 +1,22 @@
+{
+    "viewMethods": [
+        {
+            "name": "get_num",
+            "args": []
+        }
+    ],
+    "changeMethods": [
+        {
+            "name": "increment",
+            "args": []
+        },
+        {
+            "name": "decrement",
+            "args": []
+        },
+        {
+            "name": "reset",
+            "args": []
+        }
+    ]
+}

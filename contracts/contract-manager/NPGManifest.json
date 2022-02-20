@@ -1,0 +1,46 @@
+{
+    "viewMethods": [
+        {
+            "name": "getContracts",
+            "args": [
+              {
+                    "name": "accountId",
+                    "type": "string",
+                    "default": ""
+                }
+            ]
+        }
+    ],
+    "changeMethods": [
+        {
+            "name": "addContract",
+            "args": [
+                {
+                    "name": "id",
+                    "type": "string",
+                    "default": ""
+                },
+                {
+                    "name": "name",
+                    "type": "string",
+                    "default": ""
+                },
+                {
+                    "name": "type",
+                    "type": "string",
+                    "default": ""
+                }
+            ]
+        },
+        {
+            "name": "removeStudent",
+            "args": [
+                {
+                    "name": "id",
+                    "type": "string",
+                    "default": ""
+                }
+            ]
+        }
+    ]
+}

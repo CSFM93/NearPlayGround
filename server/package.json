@@ -1,0 +1,29 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "*.json",
+      "*.png"
+    ]
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "archiver": "^5.3.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.2",
+    "file-system-explorer": "^1.1.7",
+    "fs-extra": "^10.0.0",
+    "multer": "^1.4.4",
+    "socket.io": "^4.4.1",
+    "uuid": "^8.3.2"
+  }
+}
