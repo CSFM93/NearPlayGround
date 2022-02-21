@@ -13,7 +13,7 @@ const io = require("socket.io")(server,
 let fileManager = require('./fileManager')
 let shellHelper = require('./shellHelper')
 const path = __dirname + '/dist/';
-let basePath = __dirname +"/NearPG/Users/"
+let basePath = __dirname + "/NearPG/Users/"
 
 
 app.use(cors())
@@ -28,9 +28,18 @@ io.on('connection', (socket) => {
 
     socket.on('compile', (msg) => {
         console.log('message: ' + msg);
-        let command = msg.command
+        let command
         let contract = msg.contract
         let path = basePath + contract.owner + "/" + contract.id + "/"
+        if (contract.type === "Rust") {
+            let targetPath = basePath + contract.owner + "/target"
+            console.log(targetPath)
+            command = `cargo build --target wasm32-unknown-unknown --release --target-dir ${targetPath}`
+        } else {
+            command = "npm run build"
+        }
+
+
         let data = {
             contract: contract,
             command: command,
@@ -44,9 +53,15 @@ io.on('connection', (socket) => {
     });
 
     socket.on('test', (msg) => {
-        let command = msg.command
+        let command 
         let contract = msg.contract
         let path = basePath + contract.owner + "/" + contract.id + "/"
+        if (contract.type === "Rust") {
+            let targetPath = basePath + contract.owner + "/target"
+            command = `cargo test --target-dir ${targetPath}`
+        } else {
+            command = "npm run test --no-color"
+        }
         let data = {
             contract: contract,
             command: command,
@@ -133,6 +148,7 @@ app.post('/getFileTree', async (req, res) => {
     }
 })
 
+
 app.post('/createFile', async (req, res) => {
     try {
         let data = req.body.data
@@ -144,7 +160,7 @@ app.post('/createFile', async (req, res) => {
         if (data.path === "") {
             filePath = path
         } else {
-            filePath = data.path+"/"
+            filePath = data.path + "/"
         }
         console.log('filePath: ', filePath)
         let createdFile = fileManager.createFile(filePath, data.filename)
@@ -196,7 +212,7 @@ app.post('/renameFile', async (req, res) => {
         console.log('req data: ', data)
 
         let oldFilePath = data.oldFilePath
-        let newPath = data.oldFilePath.replace(data.oldFileName,data.newFileName)
+        let newPath = data.oldFilePath.replace(data.oldFileName, data.newFileName)
         let path = basePath + data.contract.owner + "/" + data.contract.id + "/"
 
 
@@ -356,3 +372,4 @@ app.post('/getManifest', async (req, res) => {
 
 
 server.listen(3000, () => console.log('Example app is listening on port 3000.'));
+
