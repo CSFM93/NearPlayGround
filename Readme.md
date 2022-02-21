@@ -8,7 +8,7 @@ NPG also allows the user to export the smart contract project by clicking the do
 
 Live demo URL : http://161.35.237.45:3000
 
-[](https://www.youtube.com/watch?v=qhUrogx9YuU)
+Youtube demo URL : https://www.youtube.com/watch?v=qhUrogx9YuU)
 
 
 ## How to Run 
@@ -46,8 +46,15 @@ npm install && npm run build
 Copy the the generated `dist` directory to the `server` directory:
 
 ```
-cp dist ../server
+cp -r dist ../server
 ```
+
+Navigate to the `server` directory:
+
+```
+cd ../server
+```
+
 
 Install the node modules and start the application (I recommend you to use pm2 to run the app):
 
