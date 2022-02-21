@@ -8,11 +8,10 @@ NPG also allows the user to export the smart contract project by clicking the do
 
 Live demo URL : http://161.35.237.45:3000
 
-Youtube demo URL : https://www.youtube.com/watch?v=qhUrogx9YuU)
+Youtube demo URL : https://www.youtube.com/watch?v=qhUrogx9YuU
 
 
 ## How to Run 
-
 
 ### Using Docker
 
