@@ -1,0 +1,296 @@
+<template>
+  <div class="q-mx-md">
+    <q-table
+      title="Contracts"
+      dense
+      class="q-mt-lg"
+      :rows="rows"
+      :columns="columns"
+      row-key="name"
+    >
+      <template v-slot:top class="">
+        <div class="col-2 q-table__title q-my-lg">Contracts</div>
+
+        <q-space />
+        <q-btn
+          class="q-my-lg"
+          color="primary"
+          label="New Contract"
+          :disable="btnLoading"
+          :loading="btnLoading"
+          @click="openDialog"
+        />
+      </template>
+      <template v-slot:body-cell-actions="props">
+        <q-td :props="props">
+          <q-btn
+            flat
+            color="green"
+            icon="visibility"
+            @click="viewProject(props.row)"
+          />
+          <q-btn
+            flat
+            color="red"
+            icon="delete"
+            :disabled="btnDelete"
+            :loading="btnDelete"
+            @click="deleteItem(props.row)"
+          />
+        </q-td>
+      </template>
+    </q-table>
+  </div>
+  <q-dialog v-model="dialog" @hide="onDialogHide">
+    <q-card class="cardForm" style="height: 60vh; width: 50vw">
+      <q-card-section>
+        <div class="text-h6 text-center">New contract</div>
+      </q-card-section>
+      <q-card-section>
+        <q-form @submit="save" class="q-gutter-md">
+          <q-input
+            filled
+            v-model="editedItem.name"
+            label="Contract name"
+            lazy-rules
+            :rules="[
+              (val) => (val && val.length > 0) || 'Please type something',
+            ]"
+          />
+          <q-select
+            outlined
+            v-model="editedItem.type"
+            label="Contract Type"
+            :options="projectTypes"
+          />
+        </q-form>
+      </q-card-section>
+      <q-card-actions class="row justify-center centers">
+        <q-btn @click="save" label="Save" color="primary" type="submit" />
+        <q-btn @click="close" label="Cancel" color="primary" class="q-ml-xl" />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
+
+</template>
+
+
+
+<script>
+import * as nearAPI from "near-api-js";
+import { v4 as uuidv4 } from "uuid";
+import actions from "../components/actions";
+import { useQuasar } from "quasar";
+
+export default {
+  name: "Contracts",
+  data: () => ({
+    dialog: false,
+    btnDelete: false,
+    btnLoading: false,
+    tableKey: "key",
+    contract: {},
+    account: {},
+    projectTypes: ["Rust", "AssemblyScript"],
+    columns: [
+      {
+        name: "ID",
+        align: "left",
+        label: "ID",
+        field: (row) => row.id,
+        sortable: true,
+      },
+
+      {
+        name: "name",
+        align: "left",
+        label: "Contract name",
+        field: (row) => row.name,
+        sortable: true,
+      },
+      {
+        name: "type",
+        align: "left",
+        label: "Type",
+        field: (row) => row.type,
+        sortable: true,
+      },
+      {
+        name: "owner",
+        align: "left",
+        label: "Contract owner",
+        field: (row) => row.owner,
+        sortable: true,
+      },
+      {
+        name: "owner",
+        align: "left",
+        label: "Contract owner",
+        field: (row) => row.owner,
+        sortable: true,
+      },
+      {
+        name: "actions",
+        align: "center",
+        label: "Actions",
+        field: (row) => row.id,
+        sortable: false,
+      },
+    ],
+    rows: [],
+    editedIndex: -1,
+    editedItem: {
+      id: "",
+      name: "",
+      type: "Rust",
+    },
+    defaultItem: {
+      id: "",
+      name: "",
+      type: "Rust",
+    },
+  }),
+  computed: {
+    formTitle() {
+      return this.editedIndex === -1 ? "New Item" : "Edit Item";
+    },
+  },
+  setup() {
+    const $q = useQuasar();
+    return {
+      showNotification(message, color) {
+        $q.notify({
+          message: message,
+          color: color,
+        });
+      },
+    };
+  },
+  watch: {
+    dialog(val) {
+      val || this.close();
+    },
+  },
+  mounted() {
+    this.emitter.emit("getAccount");
+  },
+  created() {
+    this.emitter.on("sendAccount", (data) => {
+      try {
+        console.log("acc", data);
+        this.account = data;
+        this.initialize();
+      } catch (error) {
+        console.log("error: ", error);
+      }
+    });
+  },
+  methods: {
+    onDialogHide() {
+      this.dialog = false;
+    },
+    openDialog() {
+      this.editedItem = Object.assign({}, this.defaultItem);
+      this.dialog = true;
+    },
+    async initialize() {
+      this.contract = new nearAPI.Contract(
+        this.account,
+        "c8.nino1993.testnet",
+        {
+          viewMethods: ["getContracts"],
+          changeMethods: ["removeContract", "addContract"],
+          sender: this.account,
+        }
+      );
+
+      try {
+        let contracts = await this.contract.getContracts({
+          accountId: this.account.accountId,
+        });
+        console.log("contracts found: ", contracts);
+        if (contracts.length > 0) {
+          // this.row = null
+          this.rows = [];
+          this.rows.push(...contracts);
+          setTimeout(() => {
+            this.tableKey = "newdddddd";
+          }, 5000);
+          console.log("rows: ", this.rows);
+        }
+      } catch (error) {
+        console.log(`error: ${error}`);
+      }
+    },
+    editItem(item) {
+      this.editedIndex = this.rows.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.dialog = true;
+    },
+    async deleteItem(item) {
+      console.log("delete: ", item.id);
+      const index = this.rows.indexOf(item);
+      this.btnDelete = true;
+      confirm("Are you sure you want to delete this contract?") &&
+        (await this.contract.removeContract({ id: item.id }));
+      let data = { contract: item };
+      actions.deleteProjectDirectory(data);
+      this.rows.splice(index, 1);
+      this.showNotification("Contract deleted successfuly", "positive");
+      this.btnDelete = false;
+    },
+    close() {
+      this.dialog = false;
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedIndex = -1;
+      });
+    },
+    async save() {
+      let item = JSON.parse(JSON.stringify(this.editedItem));
+      item.id = uuidv4();
+      item.owner = this.account.accountId;
+      this.btnLoading = true;
+      this.close();
+      console.table(item);
+
+      try {
+        await this.contract
+          .addContract({ id: item.id, name: item.name, type: item.type })
+          .then(async (res) => {
+            console.log(res);
+            let data = { contract: item };
+            await actions.createProjectDirectory(data).then((res) => {
+              if (res) {
+                this.showNotification(
+                  "Project created successfuly",
+                  "positive"
+                );
+              } else {
+                this.showNotification(
+                  "Failed to create project directory",
+                  "negative"
+                );
+              }
+            });
+            this.rows.push(item);
+            this.showNotification("Project created successfuly", "positive");
+          });
+        this.btnLoading = false;
+      } catch (error) {
+        this.showNotification("Failed to add project", "negative");
+        this.btnLoading = false;
+      }
+    },
+    async viewProject(item) {
+      let route = "contract";
+      // await this.$store.commit("setContract", item);
+      this.$route.params.contractName = item.name;
+      if (this.$route.name !== route) {
+        this.$router.push({ name: route }).catch((error) => {});
+      }
+    },
+  },
+};
+</script>
