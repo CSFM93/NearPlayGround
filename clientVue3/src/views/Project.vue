@@ -1,63 +1,72 @@
 <template>
-  <v-container fluid>
-    <v-row>
-      <v-col cols="3" class="sidebar border-r1 d-flex align-stretch">
-        <v-tabs vertical class="border-r2 pt-2" v-model="activeTab">
-          <v-tab
-            v-for="(tab, i) in tabs"
-            :key="i"
-            @click="changeActiveTab(i)"
-          >
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on, attrs }">
-                <v-icon
-                  color="primary"
-                  dark
-                  v-bind="attrs"
-                  v-on="on"
-                  left
-                  x-large
-                >
-                  {{ tab.icon }}
-                </v-icon>
-              </template>
-              <span>{{ tab.tooltip }}</span>
-            </v-tooltip>
-          </v-tab>
-          <v-tab-item>
-            <TreeView :contract="contract" />
-          </v-tab-item>
-          <v-tab-item>
-            <CompileView :contract="contract" />
-          </v-tab-item>
-          <v-tab-item>
-            <DeployView :contract="contract" />
-          </v-tab-item>
-        </v-tabs>
-      </v-col>
-      <v-col cols="8" class="">
-        <splitpanes class="default-theme" horizontal style="height: 100vh">
-          <pane
-            :key="1"
-            size="70"
-            min-size="20"
-            max-size="90"
-            style="background-color: #1e1e1e"
-          >
-            <FileViewer class="d-flex align-stretch" />
-          </pane>
-          <pane
-            :key="2"
-            min-size="10"
-            max-size="80"
-            style="background-color: #1e1e1e"
-          >
-            <Logs class="d-flex align-stretch" />
-          </pane>
-        </splitpanes>
-      </v-col>
-    </v-row>
-  </v-container>
+  <div>
+    <q-splitter v-model="splitterModel" style="width: 25vw; height: 92vh">
+      <template v-slot:before>
+        <q-tabs v-model="tab" vertical class="text-teal">
+          <q-tab :name="tab1.tooltip" label="" v-for="(tab1, i) in tabs" :key="i">
+            <q-icon :name="tab1.icon" size="lg" />
+            <q-tooltip>{{ tab1.tooltip }}</q-tooltip>
+          </q-tab>
+
+          <q-tab name="alarms" :icon="mdiTestTube" />
+          <q-tab name="movies" :icon="mdiCloudUpload" />
+        </q-tabs>
+      </template>
+
+      <template v-slot:after>
+        <q-tab-panels
+          v-model="tab"
+          animated
+          swipeable
+          vertical
+          transition-prev="jump-up"
+          transition-next="jump-up"
+        >
+          <q-tab-panel name="Write" style="height: 92vh">
+            <TreeView  :contract="storeContract.contract" />
+          </q-tab-panel>
+
+          <q-tab-panel name="Test and Compile" style="height: 92">
+            <div class="text-h4 q-mb-md">Alarms</div>
+            <p>
+              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis
+              praesentium cumque magnam odio iure quidem, quod illum numquam
+              possimus obcaecati commodi minima assumenda consectetur culpa fuga
+              nulla ullam. In, libero.
+            </p>
+            <p>
+              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis
+              praesentium cumque magnam odio iure quidem, quod illum numquam
+              possimus obcaecati commodi minima assumenda consectetur culpa fuga
+              nulla ullam. In, libero.
+            </p>
+          </q-tab-panel>
+
+          <q-tab-panel name="Deploy and call" style="height: 92vh">
+            <div class="text-h4 q-mb-md">Movies</div>
+            <p>
+              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis
+              praesentium cumque magnam odio iure quidem, quod illum numquam
+              possimus obcaecati commodi minima assumenda consectetur culpa fuga
+              nulla ullam. In, libero.
+            </p>
+            <p>
+              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis
+              praesentium cumque magnam odio iure quidem, quod illum numquam
+              possimus obcaecati commodi minima assumenda consectetur culpa fuga
+              nulla ullam. In, libero.
+            </p>
+            <p>
+              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis
+              praesentium cumque magnam odio iure quidem, quod illum numquam
+              possimus obcaecati commodi minima assumenda consectetur culpa fuga
+              nulla ullam. In, libero.
+            </p>
+          </q-tab-panel>
+        </q-tab-panels>
+      </template>
+    </q-splitter>
+  </div>
 </template>
 
 <script>
@@ -71,6 +80,14 @@ import FileViewer from "./FileViewer.vue";
 
 import Logs from "../components/Logs.vue";
 
+import { ref } from "vue";
+import { useQuasar } from "quasar";
+import { useContractStore } from "@/stores/contract";
+
+import { mdiFile } from "@quasar/extras/mdi-v6";
+import { mdiTestTube } from "@quasar/extras/mdi-v6";
+import { mdiCloudUpload } from "@quasar/extras/mdi-v6";
+
 export default {
   name: "TabsLayout",
   components: {
@@ -83,24 +100,39 @@ export default {
     Logs,
   },
   data: () => ({
+    tab: ref("Write"),
+    splitterModel: ref(20),
     activeTab: null,
     contract: {},
-    tabs: [
-      { icon: "mdi-file", tooltip: "Write" },
-      { icon: "mdi-test-tube", tooltip: "Test and Compile" },
-      { icon: "mdi-cloud-upload", tooltip: "Deploy and call" },
-    ],
+    tabs: [],
   }),
   async created() {
+    this.tabs = [
+      { icon: mdiFile, tooltip: "Write" },
+      { icon: mdiTestTube, tooltip: "Test and Compile" },
+      { icon: mdiCloudUpload, tooltip: "Deploy and call" },
+    ];
     this.initialize();
   },
-  computed: {},
+  setup() {
+    const storeContract = useContractStore();
+    const $q = useQuasar();
+    return {
+      showNotification(message, color) {
+        $q.notify({
+          message: message,
+          color: color,
+        });
+      },
+      storeContract,
+    };
+  },
   methods: {
     async initialize() {
-      this.contract = await this.$store.state.contract;
-      console.log("contract", this.contract);
+      // this.contract = await this.$store.state.contract;
+      console.log("contract", this.storeContract);
 
-      return this.contract;
+      // return this.contract;
     },
     changeActiveTab(i) {
       if (i == 2) {

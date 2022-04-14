@@ -40,39 +40,42 @@
         </q-td>
       </template>
     </q-table>
+    <q-dialog v-model="dialog" @hide="onDialogHide">
+      <q-card class="cardForm" style="height: 60vh; width: 50vw">
+        <q-card-section>
+          <div class="text-h6 text-center">New contract</div>
+        </q-card-section>
+        <q-card-section>
+          <q-form @submit="save" class="q-gutter-md">
+            <q-input
+              filled
+              v-model="editedItem.name"
+              label="Contract name"
+              lazy-rules
+              :rules="[
+                (val) => (val && val.length > 0) || 'Please type something',
+              ]"
+            />
+            <q-select
+              outlined
+              v-model="editedItem.type"
+              label="Contract Type"
+              :options="projectTypes"
+            />
+          </q-form>
+        </q-card-section>
+        <q-card-actions class="row justify-center centers">
+          <q-btn @click="save" label="Save" color="primary" type="submit" />
+          <q-btn
+            @click="close"
+            label="Cancel"
+            color="primary"
+            class="q-ml-xl"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
-  <q-dialog v-model="dialog" @hide="onDialogHide">
-    <q-card class="cardForm" style="height: 60vh; width: 50vw">
-      <q-card-section>
-        <div class="text-h6 text-center">New contract</div>
-      </q-card-section>
-      <q-card-section>
-        <q-form @submit="save" class="q-gutter-md">
-          <q-input
-            filled
-            v-model="editedItem.name"
-            label="Contract name"
-            lazy-rules
-            :rules="[
-              (val) => (val && val.length > 0) || 'Please type something',
-            ]"
-          />
-          <q-select
-            outlined
-            v-model="editedItem.type"
-            label="Contract Type"
-            :options="projectTypes"
-          />
-        </q-form>
-      </q-card-section>
-      <q-card-actions class="row justify-center centers">
-        <q-btn @click="save" label="Save" color="primary" type="submit" />
-        <q-btn @click="close" label="Cancel" color="primary" class="q-ml-xl" />
-      </q-card-actions>
-    </q-card>
-  </q-dialog>
-
-
 </template>
 
 
@@ -83,6 +86,10 @@ import { v4 as uuidv4 } from "uuid";
 import actions from "../components/actions";
 import { useQuasar } from "quasar";
 
+import { ref } from "vue";
+
+import { useContractStore } from "@/stores/contract";
+
 export default {
   name: "Contracts",
   data: () => ({
@@ -90,7 +97,7 @@ export default {
     btnDelete: false,
     btnLoading: false,
     tableKey: "key",
-    contract: {},
+    contract:{},
     account: {},
     projectTypes: ["Rust", "AssemblyScript"],
     columns: [
@@ -158,6 +165,8 @@ export default {
   },
   setup() {
     const $q = useQuasar();
+    const storeContract = useContractStore();
+
     return {
       showNotification(message, color) {
         $q.notify({
@@ -165,6 +174,7 @@ export default {
           color: color,
         });
       },
+      storeContract
     };
   },
   watch: {
@@ -285,7 +295,9 @@ export default {
     },
     async viewProject(item) {
       let route = "contract";
-      // await this.$store.commit("setContract", item);
+
+      console.log("contract: ",this.storeContract)
+      await this.storeContract.setContract(item)
       this.$route.params.contractName = item.name;
       if (this.$route.name !== route) {
         this.$router.push({ name: route }).catch((error) => {});

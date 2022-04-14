@@ -12,6 +12,7 @@
     "@mdi/font": "5.9.55",
     "@quasar/extras": "^1.13.5",
     "@rollup/plugin-inject": "^4.0.4",
+    "@vueuse/core": "^8.2.6",
     "axios": "^0.26.1",
     "buffer": "^6.0.3",
     "core-js": "^3.21.1",

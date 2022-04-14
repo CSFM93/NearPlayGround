@@ -1,142 +1,27 @@
 <template 
 >
   <v-container fluid class="">
-    <v-row>
-      <v-col cols="7">
-        <h3 class="pl-3">Explorer</h3>
-      </v-col>
-      <v-col>
-        <v-row class="ml-2" cols="5">
-          <template>
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                  icon
-                  class="btn-new"
-                  v-bind="attrs"
-                  v-on="on"
-                  @click="createFileInRootDir"
-                >
-                  <v-icon>mdi-file-plus</v-icon>
-                </v-btn>
-              </template>
-              <span>New file</span>
-            </v-tooltip>
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                  icon
-                  class="btn-new"
-                  v-bind="attrs"
-                  v-on="on"
-                  @click="downloadProject"
-                >
-                  <v-icon>mdi-file-download</v-icon>
-                </v-btn>
-              </template>
-              <span>Download file</span>
-            </v-tooltip>
-            <v-dialog v-model="dialog" max-width="400px">
-              <v-card>
-                <v-card-title>
-                  <span class="headline">Enter File name</span>
-                </v-card-title>
-                <v-card-text>
-                  <v-container>
-                    <v-row>
-                      <v-col cols="12" sm="6" md="8">
-                        <v-text-field
-                          v-model="newFileName"
-                          label="Filename"
-                        ></v-text-field>
-                      </v-col>
-                    </v-row>
-                  </v-container>
-                </v-card-text>
+    <q-tree :nodes="items" node-key="path" default-expand-all>
+      <template v-slot:default-header="prop">
+        <div class="row items-center">
+          <q-icon :name="'share'" color="orange" size="28px" class="q-mr-sm" />
+          <div class="text-weight-bold text-primary">{{ prop.node.name }}</div>
+        </div>
+      </template>
+    </q-tree>
 
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" text @click="closeDialog"
-                    >Cancel</v-btn
-                  >
-                  <v-btn
-                    @click="createFile"
-                    color="primary"
-                    :disabled="btnCreateFile"
-                    :loading="btnCreateFile"
-                    >Save</v-btn
-                  >
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-          </template>
-        </v-row>
-      </v-col>
-    </v-row>
-    <v-flex xs12 style="overflow: auto">
-      <v-treeview
-        v-model="tree"
-        :open="initiallyOpen"
-        :items="items"
-        activatable
-        hoverable
-        item-key="path"
-        open-on-click
-        class="ov"
-      >
-        <template slot="label" slot-scope="{ item, open }">
-          <a
-            @contextmenu="show"
-            :data-item="JSON.stringify(item)"
-            :ripple="false"
-            @click="openFile(item)"
-          >
-            <v-icon v-if="item.type === 1">
-              {{ open ? "mdi-folder-open" : "mdi-folder" }}
-            </v-icon>
-            <v-icon v-else>
-              {{
-                item.extension === ".toml"
-                  ? files["txt"]
-                  : files[item.extension.replace(".", "")]
-              }}
-            </v-icon>
-            {{ item.name }}
-          </a>
-        </template>
-      </v-treeview>
-    </v-flex>
-    <v-menu
-      v-model="showMenu"
-      :position-x="x"
-      :position-y="y"
-      absolute
-      offset-y
-    >
-      <v-list v-if="currentItem.type === 1">
-        <v-list-item v-for="menuItem in folderMenuItems" :key="menuItem">
-          <v-list-item-title @click="folderAction(menuItem)">{{
-            menuItem
-          }}</v-list-item-title>
-        </v-list-item>
-      </v-list>
-      <v-list v-else>
-        <v-list-item v-for="menuItem in fileMenuItems" :key="menuItem">
-          <v-list-item-title @click="fileAction(menuItem)">{{
-            menuItem
-          }}</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-menu>
   </v-container>
 </template>
 
 <script>
 import actions from "./actions";
+import { useContractStore } from "@/stores/contract";
+import { useQuasar } from "quasar";
+
 
 export default {
   name: "TreeView",
-  props: ["contract"],
+  props:["contract"],
   data: () => ({
     dialog: false,
     protectedFiles: ["lib.rs", "NearPGManifest.json", "cargo.toml"],
@@ -152,7 +37,7 @@ export default {
     files: {
       html: "mdi-language-html5",
       js: "mdi-nodejs",
-      ts:"mdi-language-typescript",
+      ts: "mdi-language-typescript",
       json: "mdi-code-json",
       md: "mdi-language-markdown",
       pdf: "mdi-file-pdf",
@@ -165,15 +50,27 @@ export default {
     items: [],
     currentItem: {},
   }),
+  setup() {
+    const $q = useQuasar();
+    return {
+      showNotification(message, color) {
+        $q.notify({
+          message: message,
+          color: color,
+        });
+      },
+    };
+  },
   created() {
     this.initialize();
-    this.emitter.on("refreshView", data => {
-      this.initialize()
+    this.emitter.on("refreshView", (data) => {
+      this.initialize();
     });
   },
   methods: {
     async initialize() {
       let data = { contract: this.contract };
+      console.log("contract", this.contract);
       let res = await actions.getFileTree(data);
       console.log(res);
       this.organizeFileTree(res);
