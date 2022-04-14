@@ -2,14 +2,18 @@
   <div>
     <q-splitter v-model="splitterModel" style="width: 25vw; height: 92vh">
       <template v-slot:before>
-        <q-tabs v-model="tab" vertical class="text-teal">
-          <q-tab :name="tab1.tooltip" label="" v-for="(tab1, i) in tabs" :key="i">
+        <q-tabs v-model="tab" vertical class="text-grey" active-color="white"
+            indicator-color="primary">
+          <q-tab
+            :name="tab1.tooltip"
+            label=""
+            v-for="(tab1, i) in tabs"
+            :key="i"
+            
+          >
             <q-icon :name="tab1.icon" size="lg" />
             <q-tooltip>{{ tab1.tooltip }}</q-tooltip>
           </q-tab>
-
-          <q-tab name="alarms" :icon="mdiTestTube" />
-          <q-tab name="movies" :icon="mdiCloudUpload" />
         </q-tabs>
       </template>
 
@@ -23,7 +27,7 @@
           transition-next="jump-up"
         >
           <q-tab-panel name="Write" style="height: 92vh">
-            <TreeView  :contract="storeContract.contract" />
+            <TreeView :contract="storeContract.contract" />
           </q-tab-panel>
 
           <q-tab-panel name="Test and Compile" style="height: 92">
@@ -84,9 +88,7 @@ import { ref } from "vue";
 import { useQuasar } from "quasar";
 import { useContractStore } from "@/stores/contract";
 
-import { mdiFile } from "@quasar/extras/mdi-v6";
-import { mdiTestTube } from "@quasar/extras/mdi-v6";
-import { mdiCloudUpload } from "@quasar/extras/mdi-v6";
+import { mdiFile, mdiTestTube, mdiCloudUpload } from "@quasar/extras/mdi-v6";
 
 export default {
   name: "TabsLayout",
@@ -107,15 +109,21 @@ export default {
     tabs: [],
   }),
   async created() {
+    this.mdiFile = mdiFile
+    this.mdiTestTube = mdiTestTube
+    this.mdiCloudUpload = mdiCloudUpload
+
     this.tabs = [
-      { icon: mdiFile, tooltip: "Write" },
-      { icon: mdiTestTube, tooltip: "Test and Compile" },
-      { icon: mdiCloudUpload, tooltip: "Deploy and call" },
+      { icon: this.mdiFile, tooltip: "Write" },
+      { icon: this.mdiTestTube, tooltip: "Test and Compile" },
+      { icon: this.mdiCloudUpload, tooltip: "Deploy and call" },
     ];
     this.initialize();
   },
   setup() {
     const storeContract = useContractStore();
+
+    console.log("project contract: ",storeContract.state)
     const $q = useQuasar();
     return {
       showNotification(message, color) {
