@@ -1,73 +1,119 @@
 <template>
   <div>
-    <q-splitter v-model="splitterModel" style="width: 25vw; height: 92vh">
+    <q-splitter v-model="splitterModel">
       <template v-slot:before>
-        <q-tabs v-model="tab" vertical class="text-grey" active-color="white"
-            indicator-color="primary">
-          <q-tab
-            :name="tab1.tooltip"
-            label=""
-            v-for="(tab1, i) in tabs"
-            :key="i"
-            
-          >
-            <q-icon :name="tab1.icon" size="lg" />
-            <q-tooltip>{{ tab1.tooltip }}</q-tooltip>
-          </q-tab>
-        </q-tabs>
-      </template>
-
-      <template v-slot:after>
-        <q-tab-panels
-          v-model="tab"
-          animated
-          swipeable
-          vertical
-          transition-prev="jump-up"
-          transition-next="jump-up"
+        <q-splitter
+          v-model="splitterModel2"
+          style="width: 100%; height: 92vh"
+          class="col"
         >
-          <q-tab-panel name="Write" style="height: 92vh">
-            <TreeView :contract="storeContract.contract" />
-          </q-tab-panel>
+          <template v-slot:before>
+            <q-tabs
+              v-model="tab"
+              vertical
+              class="text-grey"
+              active-color="white"
+              indicator-color="primary"
+            >
+              <q-tab
+                :name="tab1.tooltip"
+                label=""
+                v-for="(tab1, i) in tabs"
+                :key="i"
+              >
+                <q-icon :name="tab1.icon" size="lg" />
+                <q-tooltip>{{ tab1.tooltip }}</q-tooltip>
+              </q-tab>
+            </q-tabs>
+          </template>
 
-          <q-tab-panel name="Test and Compile" style="height: 92">
-            <div class="text-h4 q-mb-md">Alarms</div>
-            <p>
-              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis
-              praesentium cumque magnam odio iure quidem, quod illum numquam
-              possimus obcaecati commodi minima assumenda consectetur culpa fuga
-              nulla ullam. In, libero.
-            </p>
-            <p>
-              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis
-              praesentium cumque magnam odio iure quidem, quod illum numquam
-              possimus obcaecati commodi minima assumenda consectetur culpa fuga
-              nulla ullam. In, libero.
-            </p>
-          </q-tab-panel>
+          <template v-slot:after>
+            <q-tab-panels
+              v-model="tab"
+              animated
+              swipeable
+              vertical
+              transition-prev="jump-up"
+              transition-next="jump-up"
+            >
+              <q-tab-panel name="Write" style="height: 92vh">
+                <TreeView />
+              </q-tab-panel>
 
-          <q-tab-panel name="Deploy and call" style="height: 92vh">
-            <div class="text-h4 q-mb-md">Movies</div>
-            <p>
-              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis
-              praesentium cumque magnam odio iure quidem, quod illum numquam
-              possimus obcaecati commodi minima assumenda consectetur culpa fuga
-              nulla ullam. In, libero.
-            </p>
-            <p>
-              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis
-              praesentium cumque magnam odio iure quidem, quod illum numquam
-              possimus obcaecati commodi minima assumenda consectetur culpa fuga
-              nulla ullam. In, libero.
-            </p>
-            <p>
-              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis
-              praesentium cumque magnam odio iure quidem, quod illum numquam
-              possimus obcaecati commodi minima assumenda consectetur culpa fuga
-              nulla ullam. In, libero.
-            </p>
-          </q-tab-panel>
-        </q-tab-panels>
+              <q-tab-panel name="Test and Compile" style="height: 92">
+                <div class="text-h4 q-mb-md">Alarms</div>
+                <p>
+                  Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis
+                  praesentium cumque magnam odio iure quidem, quod illum numquam
+                  possimus obcaecati commodi minima assumenda consectetur culpa
+                  fuga nulla ullam. In, libero.
+                </p>
+                <p>
+                  Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis
+                  praesentium cumque magnam odio iure quidem, quod illum numquam
+                  possimus obcaecati commodi minima assumenda consectetur culpa
+                  fuga nulla ullam. In, libero.
+                </p>
+              </q-tab-panel>
+
+              <q-tab-panel name="Deploy and call" style="height: 92vh">
+                <div class="text-h4 q-mb-md">Movies</div>
+                <p>
+                  Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis
+                  praesentium cumque magnam odio iure quidem, quod illum numquam
+                  possimus obcaecati commodi minima assumenda consectetur culpa
+                  fuga nulla ullam. In, libero.
+                </p>
+                <p>
+                  Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis
+                  praesentium cumque magnam odio iure quidem, quod illum numquam
+                  possimus obcaecati commodi minima assumenda consectetur culpa
+                  fuga nulla ullam. In, libero.
+                </p>
+                <p>
+                  Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis
+                  praesentium cumque magnam odio iure quidem, quod illum numquam
+                  possimus obcaecati commodi minima assumenda consectetur culpa
+                  fuga nulla ullam. In, libero.
+                </p>
+              </q-tab-panel>
+            </q-tab-panels>
+          </template>
+        </q-splitter>
+      </template>
+      <template v-slot:after>
+        <div>
+          <q-splitter
+            v-model="splitterModel3"
+            horizontal
+            style="height: 92vh"
+            reverse
+          >
+            <template v-slot:before>
+              <div class="q-pa-md">
+                <div class="text-h4 q-mb-md">Before</div>
+                <div v-for="n in 20" :key="n" class="q-my-md">
+                  {{ n }}. Lorem ipsum dolor sit, amet consectetur adipisicing
+                  elit. Quis praesentium cumque magnam odio iure quidem, quod
+                  illum numquam possimus obcaecati commodi minima assumenda
+                  consectetur culpa fuga nulla ullam. In, libero.
+                </div>
+              </div>
+            </template>
+
+            <template v-slot:after>
+              <div class="q-pa-md">
+                <div class="text-h4 q-mb-md">After</div>
+                <div v-for="n in 20" :key="n" class="q-my-md">
+                  {{ n }}. Lorem ipsum dolor sit, amet consectetur adipisicing
+                  elit. Quis praesentium cumque magnam odio iure quidem, quod
+                  illum numquam possimus obcaecati commodi minima assumenda
+                  consectetur culpa fuga nulla ullam. In, libero.
+                </div>
+              </div>
+            </template>
+          </q-splitter>
+        </div>
       </template>
     </q-splitter>
   </div>
@@ -103,15 +149,17 @@ export default {
   },
   data: () => ({
     tab: ref("Write"),
-    splitterModel: ref(20),
+    splitterModel: ref(22),
+    splitterModel2: ref(15),
+    splitterModel3: ref(15),
     activeTab: null,
     contract: {},
     tabs: [],
   }),
   async created() {
-    this.mdiFile = mdiFile
-    this.mdiTestTube = mdiTestTube
-    this.mdiCloudUpload = mdiCloudUpload
+    this.mdiFile = mdiFile;
+    this.mdiTestTube = mdiTestTube;
+    this.mdiCloudUpload = mdiCloudUpload;
 
     this.tabs = [
       { icon: this.mdiFile, tooltip: "Write" },
@@ -121,9 +169,9 @@ export default {
     this.initialize();
   },
   setup() {
-    const storeContract = useContractStore();
+    const contractStore = useContractStore();
 
-    console.log("project contract: ",storeContract.state)
+    // console.log("project contract: ",contractStore.contract)
     const $q = useQuasar();
     return {
       showNotification(message, color) {
@@ -132,14 +180,13 @@ export default {
           color: color,
         });
       },
-      storeContract,
+      contractStore,
     };
   },
   methods: {
     async initialize() {
       // this.contract = await this.$store.state.contract;
-      console.log("contract", this.storeContract);
-
+      // console.log("contract", this.contractStore);
       // return this.contract;
     },
     changeActiveTab(i) {

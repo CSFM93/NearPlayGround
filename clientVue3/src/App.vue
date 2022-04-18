@@ -6,7 +6,7 @@
           <q-toolbar-title class="cursor-pointer" @click="navigateTo('home')"> Near Playground</q-toolbar-title>
           <template v-if="isAuthenticated">
             <div class="">
-              <p no-caps class="q-pt-md text-center text-subtitle1">
+              <p no-caps class="q-pt-md text-center text-subtitle1 ">
                 {{ nearAddress }}
               </p>
             </div>
@@ -79,7 +79,7 @@ import { useQuasar } from "quasar";
 
 // NAVBAR
 import * as nearAPI from "near-api-js";
-console.log(nearAPI);
+// console.log(nearAPI);
 
 const { connect, keyStores, WalletConnection, KeyPair, utils } = nearAPI;
 const keyStore = new keyStores.BrowserLocalStorageKeyStore();
@@ -116,14 +116,13 @@ export default {
   },
   created() {
     SocketService.setupSocketConnection();
-
     this.initialize();
   },
   mounted() {
-    console.log("this", this.emitter);
+    // console.log("this", this.emitter);
 
     this.emitter.on("getAccount", (data) => {
-      console.log("get account", account);
+      // console.log("get account", account);
       this.emitter.emit("sendAccount", account);
     });
   },
@@ -163,16 +162,16 @@ export default {
       });
     },
     async login() {
-      console.log("login", this.username);
+      // console.log("login", this.username);
       this.btnLoginLoading = true;
       wallet.requestSignIn(this.username, "Near Playground");
     },
     async logout() {
       localStorage.clear();
 
-      console.log("clearing");
+      // console.log("clearing");
       await wallet.signOut();
-      console.log(wallet.isSignedIn());
+      // console.log(wallet.isSignedIn());
       this.isAuthenticated = false;
       this.setAccount({});
       this.showNotification("Logout sucessfull", "positive");
@@ -212,7 +211,7 @@ export default {
           this.isAuthenticated = false;
         }
       } catch (error) {
-        console.log("error while signing in: ", error);
+        // console.log("error while signing in: ", error);
       }
     },
     openLink(url) {

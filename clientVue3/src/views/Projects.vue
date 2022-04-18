@@ -165,7 +165,7 @@ export default {
   },
   setup() {
     const $q = useQuasar();
-    const storeContract = useContractStore();
+    const contractStore = useContractStore();
 
     return {
       showNotification(message, color) {
@@ -174,7 +174,7 @@ export default {
           color: color,
         });
       },
-      storeContract
+      contractStore
     };
   },
   watch: {
@@ -296,8 +296,7 @@ export default {
     async viewProject(item) {
       let route = "contract";
 
-      console.log("contract: ",this.storeContract)
-      await this.storeContract.setContract(item)
+      await this.contractStore.setContract(item)
       this.$route.params.contractName = item.name;
       if (this.$route.name !== route) {
         this.$router.push({ name: route }).catch((error) => {});
