@@ -76,7 +76,7 @@
             class="q-mr-sm"
             :color="selectIcon(prop.node.extension).color"
           />
-          <div class="text-gray text-caption">{{ prop.node.name }}</div>
+          <div class="text-gray text-caption text-weight-bold">{{ prop.node.name }}</div>
         </a>
         <q-menu context-menu>
           <q-list style="min-width: 10vw" v-if="currentItem.type === 1">

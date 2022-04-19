@@ -1,13 +1,13 @@
 <template>
-  <div class="">
-    <codemirror
+  <div class="" style="height:70vh;">
+    <Codemirror
       :ref="editorKey"
       :id="editorKey"
       :value="text"
       :options="cmOptions"
       @ready="onCmReady"
       @focus="onCmFocus"
-      @input="onCmCodeChange"
+      @change="onCmCodeChange"
     />
   </div>
 </template>
@@ -15,8 +15,7 @@
 <script>
 import actions from "../components/actions";
 
-import { codemirror } from "vue-codemirror";
-
+import Codemirror from "codemirror-editor-vue3";
 // import language js
 import "codemirror/mode/javascript/javascript.js";
 import "codemirror/mode/toml/toml.js";
@@ -30,7 +29,7 @@ import "codemirror/theme/dracula.css";
 
 export default {
   components: {
-    codemirror,
+    Codemirror,
   },
   props: ["editorKey", "text", "path", "extension", "readOnly", "options"],
   data: function () {
@@ -43,10 +42,11 @@ export default {
         theme: "dracula",
         lineNumbers: true,
         line: true,
+        smartIndent: true, // Smart indent
+        indentUnit: 2, // The smart indent unit is 2 spaces in length
+        foldGutter: true, // Code folding
         styleActiveLine: true,
-        matchBrackets: true,
         gutter: ["CodeMirror-lint-markers"],
-        lint: true,
         // more CodeMirror options...
       },
     };
@@ -67,6 +67,9 @@ export default {
       };
 
       this.cmOptions.mode = files[this.extension.replace(".", "")];
+      if (files[this.extension.replace(".", "")] === undefined) {
+        this.cmOptions.mode = "text/markdown";
+      }
     },
     onCmReady(cm) {
       console.log("options: ", this.$props);
@@ -135,12 +138,12 @@ export default {
 }
 
 .CodeMirror {
-  height: 75vh !important;
+  height: 70vh !important;
   overflow-x: scroll;
 }
 
 .editor {
-  height: 140vh;
+  height: 70vh;
   z-index: 2;
   overflow-y: scroll;
 

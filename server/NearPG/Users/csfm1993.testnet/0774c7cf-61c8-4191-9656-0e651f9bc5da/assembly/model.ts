@@ -1,5 +1,5 @@
 import { context } from "near-sdk-as";
-
+// kira
 
 @nearBindgen
 export class Student {
