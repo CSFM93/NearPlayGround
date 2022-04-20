@@ -20,6 +20,7 @@
                 label=""
                 v-for="(tab1, i) in tabs"
                 :key="i"
+                @click="changeActiveTab(i)"
               >
                 <q-icon :name="tab1.icon" size="lg" />
                 <q-tooltip>{{ tab1.tooltip }}</q-tooltip>
@@ -44,26 +45,8 @@
                 <CompileView />
               </q-tab-panel>
 
-              <q-tab-panel name="Deploy and call" style="height: 92vh">
-                <div class="text-h4 q-mb-md">Movies</div>
-                <p>
-                  Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis
-                  praesentium cumque magnam odio iure quidem, quod illum numquam
-                  possimus obcaecati commodi minima assumenda consectetur culpa
-                  fuga nulla ullam. In, libero.
-                </p>
-                <p>
-                  Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis
-                  praesentium cumque magnam odio iure quidem, quod illum numquam
-                  possimus obcaecati commodi minima assumenda consectetur culpa
-                  fuga nulla ullam. In, libero.
-                </p>
-                <p>
-                  Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis
-                  praesentium cumque magnam odio iure quidem, quod illum numquam
-                  possimus obcaecati commodi minima assumenda consectetur culpa
-                  fuga nulla ullam. In, libero.
-                </p>
+              <q-tab-panel name="Deploy and call" style="height: 92vh" >
+                <DeployView />
               </q-tab-panel>
             </q-tab-panels>
           </template>

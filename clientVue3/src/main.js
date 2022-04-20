@@ -11,13 +11,12 @@ import 'quasar/src/css/index.sass'
 import mitt from 'mitt';
 const emitter = mitt();
 
-// import io from 'socket.io-client';
-// app.config.globalProperties.$soketio = io('');
+
 
 loadFonts()
 
 
-app = createApp(App)
+let app = createApp(App)
 app.use(createPinia())
 app.use(router)
 app.use(Quasar, {

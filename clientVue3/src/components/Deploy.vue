@@ -1,37 +1,40 @@
 <template 
 >
-  <v-container fluid class="">
-    <h3 class="pl-3">Deploy</h3>
-    <div class="mt-3 justify-center">
-      <div class="mt-8">
-        <div class="pl-3">
-          <h3>Deploy contract</h3>
-          <v-btn
-            class="primary mt-3"
+  <div fluid class="">
+    <div>
+      <p class="text-h6 q-pt-md">Deploy and Call </p>
+    </div>
+    <div class="q-mt-lg">
+      <div class="">
+        <div class="q-pl-md">
+          <p class="text-bold">Deploy contract</p>
+          <q-btn
+            no-caps
+            color="primary"
             @click="deploy"
             :disabled="btnDeploy"
             :loading="btnDeploy"
-            >Deploy</v-btn
+            >Deploy</q-btn
           >
         </div>
-        <v-divider class="my-5"></v-divider>
-        <div class="pl-3">
-          <h3>Call contract</h3>
+        <q-separator class="q-mt-lg" />
+
+        <div class="q-pl-md">
+          <p class="q-mt-lg text-bold">Call contract</p>
           <div class="my-2">
-            <h4 class="">View methods</h4>
-            <template>
-              <v-expansion-panels>
-                <v-expansion-panel
-                  v-for="(item, i) in viewMethods"
-                  :key="i"
-                  text
-                >
-                  <v-expansion-panel-header>
-                    {{ item.name }}
-                  </v-expansion-panel-header>
-                  <v-expansion-panel-content>
+            <p class="">View methods</p>
+            <div class="" v-if="viewMethods.length > 0">
+              <q-expansion-item
+                v-for="(item, i) in viewMethods"
+                :key="i"
+                :label="item.name"
+              >
+                <q-card>
+                  <q-card-section>
                     <div v-for="(arg, j) in item.args" :key="j">
-                      <v-text-field
+                      <q-input
+                        class="q-mt-sm"
+                        filled
                         v-if="arg.type.toLowerCase() !== 'boolean'"
                         v-model="arg.default"
                         :label="arg.name + ' : ' + arg.type"
@@ -40,43 +43,47 @@
                             ? 'text'
                             : 'number'
                         "
-                      ></v-text-field>
-                      <v-select
+                      />
+                      <q-select
+                        class="q-mt-sm"
                         v-else
+                        outlined
                         v-model="arg.default"
                         :label="arg.name + ' : ' + arg.type"
-                        :items="bools"
-                      ></v-select>
+                        :options="booleans"
+                      />
                     </div>
-
-                    <v-btn
-                      class="primary"
+                    <q-btn
+                      class="q-mt-sm"
+                      no-caps
+                      color="primary"
                       @click="callContract(i, 'view')"
-                      :disabled="btnCall"
+                      :disable="btnCall"
                       :loading="btnCall"
-                    >
-                      Call</v-btn
-                    >
-                  </v-expansion-panel-content>
-                </v-expansion-panel>
-              </v-expansion-panels>
-            </template>
+                      label="Call"
+                    />
+                  </q-card-section>
+                </q-card>
+              </q-expansion-item>
+            </div>
           </div>
-          <div class="my-2">
-            <h4 class="">Change methods</h4>
-            <template>
-              <v-expansion-panels>
-                <v-expansion-panel
-                  v-for="(item, i) in changeMethods"
-                  :key="i"
-                  text
-                >
-                  <v-expansion-panel-header>
-                    {{ item.name }}
-                  </v-expansion-panel-header>
-                  <v-expansion-panel-content>
+
+           <q-separator class="q-mt-lg q-mx-sm" />
+
+          <div class="q-mt-lg">
+            <p class="">Change methods</p>
+            <div v-if="changeMethods.length > 0">
+              <q-expansion-item
+                v-for="(item, i) in changeMethods"
+                :key="i"
+                :label="item.name"
+              >
+                <q-card>
+                  <q-card-section>
                     <div v-for="(arg, j) in item.args" :key="j">
-                      <v-text-field
+                      <q-input
+                        class="q-mt-sm"
+                        filled
                         v-if="arg.type.toLowerCase() !== 'boolean'"
                         v-model="arg.default"
                         :label="arg.name + ' : ' + arg.type"
@@ -85,32 +92,34 @@
                             ? 'text'
                             : 'number'
                         "
-                      ></v-text-field>
-                      <v-select
+                      />
+                      <q-select
+                        class="q-mt-sm"
                         v-else
+                        outlined
                         v-model="arg.default"
                         :label="arg.name + ' : ' + arg.type"
-                        :items="bools"
-                      ></v-select>
+                        :options="booleans"
+                      />
                     </div>
-
-                    <v-btn
-                      class="primary"
+                    <q-btn
+                      no-caps
+                      class="q-mt-sm"
+                      color="primary"
                       @click="callContract(i, 'change')"
-                      :disabled="btnCall"
+                      :disable="btnCall"
                       :loading="btnCall"
-                    >
-                      Call</v-btn
-                    >
-                  </v-expansion-panel-content>
-                </v-expansion-panel>
-              </v-expansion-panels>
-            </template>
+                      label="Call"
+                    />
+                  </q-card-section>
+                </q-card>
+              </q-expansion-item>
+            </div>
           </div>
         </div>
       </div>
-    </div></v-container
-  >
+    </div>
+  </div>
 </template>
           
 
@@ -118,20 +127,26 @@
 import actions from "./actions";
 import * as nearAPI from "near-api-js";
 
+import { useContractStore } from "@/stores/contract";
+import { useQuasar } from "quasar";
+import { mapState } from "pinia";
+
 export default {
   name: "Deploy",
-  props: ["contract"],
   data: () => ({
     allowToGetManifest: false,
     account: {},
     btnDeploy: false,
     btnCall: false,
-    bools: [true, false],
+    booleans: ["true", "false"],
     viewMethods: [],
     changeMethods: [],
   }),
   mounted() {
     this.emitter.emit("getAccount");
+  },
+  computed: {
+    ...mapState(useContractStore, ["contract"]),
   },
   created() {
     this.emitter.on("sendAccount", (data) => {
@@ -149,6 +164,18 @@ export default {
       this.getManifest();
     });
   },
+  setup() {
+    const $q = useQuasar();
+
+    return {
+      showNotification(message, color) {
+        $q.notify({
+          message: message,
+          color: color,
+        });
+      },
+    };
+  },
   methods: {
     async initialize() {
       this.getManifest();
@@ -158,17 +185,16 @@ export default {
         contract: this.contract,
       };
       actions.getManifest(data).then((manifest) => {
-        console.log("manifest: ", manifest);
         if (manifest !== undefined) {
           this.viewMethods = manifest.viewMethods;
           this.changeMethods = manifest.changeMethods;
+          console.log("manifest: ", manifest);
         } else {
           let params = [
             "Failed to retrieved the contract methods, please check the NPGManifest.json",
-            "red",
-            3000,
+            "negative",
           ];
-          this.sendNotification(params);
+          this.showNotification(params[0], params[1]);
         }
       });
     },
@@ -188,24 +214,23 @@ export default {
               this.emitter.emit("log", res);
               let params = [
                 `Contract successfully deployed to account ${account.accountId} `,
-                "success",
-                3000,
+                "positive",
               ];
-              this.sendNotification(params);
+              this.showNotification(params[0], params[1]);
             })
             .catch((error) => {
               console.log("error", error);
               this.emitter.emit("log", error);
-              let params = ["Failed to deploy contract", "red", 3000];
-              this.sendNotification(params);
+              let params = ["Failed to deploy contract", "negative"];
+              this.showNotification(params[0], params[1]);
             });
           this.btnDeploy = false;
         }
       } catch (error) {
         console.log("error", error);
         this.btnDeploy = false;
-        let params = ["Failed to deploy contract", "red", 3000];
-        this.sendNotification(params);
+        let params = ["Failed to deploy contract", "negative"];
+        this.showNotification(params[0], params[1]);
       }
     },
     async callContract(i, type) {
@@ -240,8 +265,11 @@ export default {
               let methodArg = this.viewMethods[i].args[j];
               let argName = methodArg.name;
               let argType = methodArg.type.toLowerCase();
-              if (argType === "string" || argType === "boolean") {
+              if (argType === "string") {
                 data[argName] = methodArg.default;
+              } else if (argType === "boolean") {
+                console.log("value", methodArg.default);
+                data[argName] = methodArg.default === "true" ? true : false;
               } else {
                 data[argName] = this.parseArg(methodArg);
               }
@@ -260,8 +288,11 @@ export default {
               let methodArg = this.changeMethods[i].args[j];
               let argName = methodArg.name;
               let argType = methodArg.type.toLowerCase();
-              if (argType === "string" || argType === "boolean") {
+              if (argType === "string") {
                 data[argName] = methodArg.default;
+              } else if (argType === "boolean") {
+                console.log("value", value);
+                data[argName] = methodArg.default === "true" ? true : false;
               } else {
                 data[argName] = this.parseArg(methodArg);
               }
@@ -283,7 +314,6 @@ export default {
         this.emitter.emit("log", error);
         console.log("err: ", error);
       }
-
     },
     parseArg(arg) {
       switch (arg.type.toLowerCase()) {
@@ -292,9 +322,6 @@ export default {
         case "int":
           return parseInt(arg.default);
       }
-    },
-    sendNotification(params) {
-      this.emitter.emit("showNotification", params);
     },
     navigateTo(route) {
       if (this.$route.name !== route) {

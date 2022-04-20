@@ -99,7 +99,7 @@ let account;
 // NAVBAR
 
 export default {
-  name: "Home",
+  name: "App",
   computed: {},
   setup() {
     const $q = useQuasar();
