@@ -40,20 +40,8 @@
                 <TreeView />
               </q-tab-panel>
 
-              <q-tab-panel name="Test and Compile" style="height: 92">
-                <div class="text-h4 q-mb-md">Alarms</div>
-                <p>
-                  Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis
-                  praesentium cumque magnam odio iure quidem, quod illum numquam
-                  possimus obcaecati commodi minima assumenda consectetur culpa
-                  fuga nulla ullam. In, libero.
-                </p>
-                <p>
-                  Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis
-                  praesentium cumque magnam odio iure quidem, quod illum numquam
-                  possimus obcaecati commodi minima assumenda consectetur culpa
-                  fuga nulla ullam. In, libero.
-                </p>
+              <q-tab-panel name="Test and Compile" style="height: 92vh">
+                <CompileView />
               </q-tab-panel>
 
               <q-tab-panel name="Deploy and call" style="height: 92vh">
@@ -90,7 +78,7 @@
             reverse
           >
             <template v-slot:before>
-              <div class="q-pa-md">
+              <div class="">
                 <FileViewer class="" />
               </div>
             </template>
@@ -134,7 +122,7 @@ export default {
     Logs,
   },
   data: () => ({
-    tab: ref("Write"),
+    tab: ref("Test and Compile"),
     splitterModel: ref(22),
     splitterModel2: ref(15),
     splitterModel3: ref(15),
@@ -188,23 +176,4 @@ export default {
 </script>
 
 <style >
-.col-3 {
-  padding: 0px;
-  border-right: 1px solid black !important;
-}
-
-.border-r2 {
-  /* height: 120vh !important; */
-  overflow-y: scroll;
-}
-
-.v-tabs--vertical > .v-tabs-bar {
-  /* height: 100vh !important; */
-  border-right: 1px solid black !important;
-}
-
-.container {
-  padding-right: 0 !important;
-  padding-left: 0 !important;
-}
 </style>

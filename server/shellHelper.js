@@ -21,6 +21,7 @@ let runShell = (data, io) => {
     const ls = spawn(cmd, args, { cwd: path });
 
     ls.stdout.on("data", data => {
+
         if (data !== undefined) {
             console.log(`stdout: ${data}`);
             io.emit('log', data.toString())

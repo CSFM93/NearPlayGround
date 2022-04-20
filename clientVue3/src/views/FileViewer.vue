@@ -5,13 +5,17 @@
       v-model="selectedTab"
       class=""
       content-class="items-start"
+      switch-indicator
+      indicator-color="primary"
     >
       <q-tab
+        no-caps
         v-for="(tab, i) in tabs"
         :ref="'tab-' + i"
         :key="i"
         :id="'tab-' + i"
         :name="i"
+        style="border-right: 0.01vh solid black"
       >
         <div class="row">
           <div class="" @click="switchTab(i)">
@@ -55,18 +59,6 @@
         </div>
       </q-tab-panel>
     </q-tab-panels>
-    <!-- <q-tab-item v-for="item in tabs" :key="'tab-editor-' + item.path">
-        <Editor
-          v-if="Object.keys(tab).length > 0"
-          :readOnly="tab.readOnly"
-          :key="tabItemKey"
-          :editorKey="'editor-' + tab.path"
-          :text="tab.text"
-          :path="tab.path"
-          :options="tab.options"
-          :extension="tab.extension"
-        />
-      </q-tab-item> -->
   </div>
 </template>
 
@@ -126,7 +118,7 @@ export default {
       closeFile: { icon: mdiClose, color: "white" },
     },
   }),
-  setup(props, context) {
+  setup() {
     const $q = useQuasar();
 
     return {
@@ -142,7 +134,24 @@ export default {
   computed: {
     ...mapState(useContractStore, ["contract"]),
   },
+
   mounted() {
+    let myTabs = document.getElementsByClassName("q-tabs__content")[1];
+
+    if (myTabs.classList.contains("items-center")) {
+      myTabs.className = myTabs.className.replace(
+        "items-center",
+        "items-start"
+      );
+
+      myTabs.className = myTabs.className.replace(
+        "q-tabs__content--align-center",
+        ""
+      );
+    }
+  },
+  beforeUpdate() {
+    console.log("before update");
     let myTabs = document.getElementsByClassName("q-tabs__content")[1];
 
     if (myTabs.classList.contains("items-center")) {
@@ -177,27 +186,10 @@ export default {
         this.tab = JSON.parse(JSON.stringify(data));
         this.tabItemKey = uuidv4();
         this.selectedTab = this.tabs.length - 1;
-        // this.selectedTab = ref((this.tabs.length - 1).toString())
-        // this.selectedTab = ref(data.name)
-        // setTimeout(() => {
-        //   let tabName = "tab-" + (this.tabs.length - 1);
-        //   let el = document.getElementById(tabName);
-        //   el.click();
-        // }, 200);
       } else {
         console.log("tab exists ------------------", this.selectedTab);
-        // setTimeout(() => {
         this.selectedTab = index;
-        // let el = document.getElementById(tabName);
-        // el.click();
-        // }, 0);
-
         this.switchTab(index);
-        // setTimeout(() => {
-        //   let el = this.$refs[tabName][0].$el;
-        //   console.log("element: ", el);
-        //   el.click();
-        // }, 500);
       }
     });
     this.emitter.on("closeTab", (filePath) => {
@@ -265,8 +257,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.q-tab {
-  text-transform: none !important;
-}
-</style>
+

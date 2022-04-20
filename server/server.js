@@ -5,7 +5,7 @@ var server = require('http').Server(app);
 const io = require("socket.io")(server,
     {
         cors: {
-            origin: "http://localhost:8080",
+            origin: "http://localhost:3001",
             methods: ["GET", "POST"]
         }
     });
@@ -68,6 +68,7 @@ io.on('connection', (socket) => {
             path: path,
             method: "test"
         }
+        console.log("run tests: ",data)
         console.log('message: ' + msg);
 
         shellHelper.runShell(data, io)
