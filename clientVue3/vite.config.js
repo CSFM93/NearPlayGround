@@ -14,9 +14,9 @@ export default defineConfig({
     quasar({
       sassVariables: 'src/quasar-variables.sass'
     }),
-    inject({ Buffer: ['buffer', 'Buffer'] }),
+    inject({ Buffer: ['buffer', 'Buffer']}),
   ],
-  define: { 'process.env': {}, "global": {}, },
+  define: { 'process.env': {}, "global": {} },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),

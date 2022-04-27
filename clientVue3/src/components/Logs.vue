@@ -21,7 +21,7 @@ export default {
   name: "Logs",
 
   data: () => ({
-    items: ["hello", "hello", "hello", "hello"],
+    items: [],
   }),
   setup(props, context) {
     return {

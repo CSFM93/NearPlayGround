@@ -2,11 +2,13 @@
   <div>
     <q-layout container style="height: 100vh" class="">
       <q-header elevated>
-        <q-toolbar class="bg-dark tbar">
-          <q-toolbar-title class="cursor-pointer" @click="navigateTo('home')"> Near Playground</q-toolbar-title>
+        <q-toolbar class="bg-dark t-bar">
+          <q-toolbar-title class="cursor-pointer" @click="navigateTo('home')">
+            Near Playground</q-toolbar-title
+          >
           <template v-if="isAuthenticated">
             <div class="">
-              <p no-caps class="q-pt-md text-center text-subtitle1 ">
+              <p no-caps class="q-pt-md text-center text-subtitle1">
                 {{ nearAddress }}
               </p>
             </div>
@@ -76,12 +78,23 @@
 <script>
 import SocketService from "./components/socketService";
 import { useQuasar } from "quasar";
+import * as b from "bip39";
+// import crypto from 'crypto'
 
 // NAVBAR
 import * as nearAPI from "near-api-js";
+import { SignedTransaction } from "near-api-js/lib/transaction";
 // console.log(nearAPI);
+const {
+  connect,
+  keyStores,
+  WalletConnection,
+  KeyPair,
 
-const { connect, keyStores, WalletConnection, KeyPair, utils } = nearAPI;
+  utils,
+  transactions,
+  accountCreator,
+} = nearAPI;
 const keyStore = new keyStores.BrowserLocalStorageKeyStore();
 
 const config = {
@@ -96,6 +109,7 @@ const config = {
 let near;
 let wallet;
 let account;
+let subAccounts = [];
 // NAVBAR
 
 export default {
@@ -120,14 +134,32 @@ export default {
   },
   mounted() {
     // console.log("this", this.emitter);
+    this.emitter.on("getAccount", async (name) => {
+      console.log("get account: ", name);
 
-    this.emitter.on("getAccount", (data) => {
-      // console.log("get account", account);
       this.emitter.emit("sendAccount", account);
+    });
+
+    this.emitter.on("getSubAccount", async (name) => {
+      console.log("get sub account: ", name);
+      let subAccount = await this.loadSubAccount(name);
+      console.log("subAccount Retrieved", subAccount);
+      this.emitter.emit("sendAccount", subAccount);
+    });
+
+    this.emitter.on("createSubAccount", async (name) => {
+      console.log("create sub account: ", name);
+      await this.createSubAccount(name);
+      console.log("subAccounts", subAccounts);
+    });
+
+    this.emitter.on("deploy", async (data) => {
+      console.log(data);
+      this.deployContract(data.binary, data.subAccountID);
     });
   },
   data: () => ({
-    username: "csfm1993.testnet",
+    username: "",
     btnLoginLoading: false,
     btnLoginLoading: false,
     dialog: false,
@@ -184,10 +216,13 @@ export default {
 
         if (wallet.isSignedIn()) {
           account = wallet.account();
-
+          let state = await account.state();
+          console.log("state: ", state);
+          account.createAndDeployContract;
           // let res = await account.deployContract().
 
           let keys = await account.getAccessKeys();
+          console.log("keys: ", keys);
           this.nearAddress = account.accountId;
           this.showNotification(
             `Welcome back ${account.accountId}`,
@@ -207,11 +242,12 @@ export default {
           // console.log(this.$router);
           this.emitter.emit("sendAccount", account);
         } else {
+          console.log("is signed in ?", wallet.isSignedIn());
           this.setAccount({});
           this.isAuthenticated = false;
         }
       } catch (error) {
-        // console.log("error while signing in: ", error);
+        console.log("error while signing in: ", error);
       }
     },
     openLink(url) {
@@ -227,16 +263,9 @@ export default {
   height: 40vh;
 }
 
-.v-main {
-  padding: 0px !important;
-}
 
-.tbar {
+.t-bar {
   z-index: 1000000 !important;
 }
 
-.container {
-  padding-top: 35px !important;
-  width: 100vw !important;
-}
 </style>

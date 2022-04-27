@@ -105,7 +105,7 @@ export default {
     Logs,
   },
   data: () => ({
-    tab: ref("Test and Compile"),
+    tab: ref("Deploy and call"),
     splitterModel: ref(22),
     splitterModel2: ref(15),
     splitterModel3: ref(15),

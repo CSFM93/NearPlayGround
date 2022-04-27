@@ -2,7 +2,7 @@
 >
   <div fluid class="">
     <div>
-      <p class="text-h6 q-pt-md">Deploy and Call </p>
+      <p class="text-h6 q-pt-md">Deploy and Call</p>
     </div>
     <div class="q-mt-lg">
       <div class="">
@@ -11,10 +11,28 @@
           <q-btn
             no-caps
             color="primary"
-            @click="deploy"
+            @click="createSubAccount"
+            :disabled="btnDeploy"
+            :loading="btnDeploy"
+            >Create sub-account</q-btn
+          >
+          <q-btn
+            class="q-mt-lg"
+            no-caps
+            color="primary"
+            @click="deployContract"
             :disabled="btnDeploy"
             :loading="btnDeploy"
             >Deploy</q-btn
+          >
+          <q-btn
+            class="q-mt-lg"
+            no-caps
+            color="negative"
+            @click="deleteSubAccount"
+            :disabled="btnDeploy"
+            :loading="btnDeploy"
+            >Delete sub-account</q-btn
           >
         </div>
         <q-separator class="q-mt-lg" />
@@ -68,7 +86,7 @@
             </div>
           </div>
 
-           <q-separator class="q-mt-lg q-mx-sm" />
+          <q-separator class="q-mt-lg q-mx-sm" />
 
           <div class="q-mt-lg">
             <p class="">Change methods</p>
@@ -126,6 +144,7 @@
 <script>
 import actions from "./actions";
 import * as nearAPI from "near-api-js";
+import socketService from "./socketService";
 
 import { useContractStore } from "@/stores/contract";
 import { useQuasar } from "quasar";
@@ -143,7 +162,8 @@ export default {
     changeMethods: [],
   }),
   mounted() {
-    this.emitter.emit("getAccount");
+    // this.emitter.emit("getSubAccount", this.contract.name);
+    this.emitter.emit("getAccount", null);
   },
   computed: {
     ...mapState(useContractStore, ["contract"]),
@@ -206,24 +226,29 @@ export default {
         let res = await actions.getContract(this.contract);
         if (res !== undefined) {
           let compiledContract = res;
-
-          await account
-            .deployContract(compiledContract)
-            .then((res) => {
-              // console.log("res", res);
-              this.emitter.emit("log", res);
-              let params = [
-                `Contract successfully deployed to account ${account.accountId} `,
-                "positive",
-              ];
-              this.showNotification(params[0], params[1]);
-            })
-            .catch((error) => {
-              console.log("error", error);
-              this.emitter.emit("log", error);
-              let params = ["Failed to deploy contract", "negative"];
-              this.showNotification(params[0], params[1]);
-            });
+          let data = {
+            binary: compiledContract,
+            subAccountID: this.contract.name,
+          };
+          this.emitter.emit("deploy", data);
+          // await this.deployContract(compiledContract, this.contract.name);
+          // await account
+          //   .deployContract(compiledContract)
+          //   .then((res) => {
+          //     // console.log("res", res);
+          //     this.emitter.emit("log", res);
+          //     let params = [
+          //       `Contract successfully deployed to account ${account.accountId} `,
+          //       "positive",
+          //     ];
+          //     this.showNotification(params[0], params[1]);
+          //   })
+          //   .catch((error) => {
+          //     console.log("error", error);
+          //     this.emitter.emit("log", error);
+          //     let params = ["Failed to deploy contract", "negative"];
+          //     this.showNotification(params[0], params[1]);
+          //   });
           this.btnDeploy = false;
         }
       } catch (error) {
@@ -232,6 +257,26 @@ export default {
         let params = ["Failed to deploy contract", "negative"];
         this.showNotification(params[0], params[1]);
       }
+    },
+    async deployContract() {
+      console.log("deploy contract");
+      this.emitter.emit("clearLogs", undefined);
+
+      let data = {
+        masterAccount: this.account.accountId,
+        contract: this.contract,
+      };
+      socketService.socket.emit("deploy", data);
+    },
+    async createSubAccount() {
+      this.emitter.emit("clearLogs", undefined);
+      let data = { contract: this.contract };
+      socketService.socket.emit("createSubAccount", data);
+    },
+    async deleteSubAccount() {
+      this.emitter.emit("clearLogs", undefined);
+      let data = { contract: this.contract };
+      socketService.socket.emit("deleteSubAccount", data);
     },
     async callContract(i, type) {
       try {
@@ -248,7 +293,7 @@ export default {
 
         const contract = new nearAPI.Contract(
           this.account,
-          this.account.accountId,
+          this.contract.name,
           {
             viewMethods: viewMethods,
             changeMethods: changeMethods,
@@ -291,7 +336,6 @@ export default {
               if (argType === "string") {
                 data[argName] = methodArg.default;
               } else if (argType === "boolean") {
-                console.log("value", value);
                 data[argName] = methodArg.default === "true" ? true : false;
               } else {
                 data[argName] = this.parseArg(methodArg);

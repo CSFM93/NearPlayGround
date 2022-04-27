@@ -26,6 +26,65 @@ app.use(express.static(path));
 io.on('connection', (socket) => {
     console.log('a user connected')
 
+    socket.on('createSubAccount', (msg) => {
+        let shellHelper2 = require('./shellHelper')
+        console.log('message: ' + msg);
+        let contract = msg.contract
+        console.log('message: ' + contract);
+        let path = basePath
+        let command = `near create-account ${contract.name} --masterAccount ${contract.owner} --initialBalance 2`
+        console.log('command: ', command)
+        let data = {
+            contract: contract,
+            command: command,
+            path: path,
+            method: "createSubAccount"
+        }
+
+        shellHelper2.runShell(data, io)
+    });
+
+
+    socket.on('deleteSubAccount', (msg) => {
+        let shellHelper2 = require('./shellHelper')
+        let contract = msg.contract
+        console.log('message: ' + contract);
+        let path = basePath
+        let command = `near delete ${contract.name} ${contract.owner}`
+        console.log('command: ', command)
+        let data = {
+            contract: contract,
+            command: command,
+            path: path,
+            method: "deleteSubAccount"
+        }
+
+        shellHelper2.runShell(data, io)
+    });
+
+    socket.on('test', (msg) => {
+        let command
+        let contract = msg.contract
+        let path = basePath + contract.owner + "/" + contract.id + "/"
+        if (contract.type === "Rust") {
+            let targetPath = basePath + contract.owner + "/target"
+            command = `cargo test --target-dir ${targetPath}`
+        } else {
+            command = "npm run test --no-color"
+        }
+        let data = {
+            contract: contract,
+            command: command,
+            path: path,
+            method: "test"
+        }
+        console.log("run tests: ", data)
+        console.log('message: ' + msg);
+
+        shellHelper.runShell(data, io)
+    });
+
+
     socket.on('compile', (msg) => {
         console.log('message: ' + msg);
         let command
@@ -52,27 +111,22 @@ io.on('connection', (socket) => {
 
     });
 
-    socket.on('test', (msg) => {
-        let command 
+
+    socket.on('deploy', (msg) => {
+        console.log('message: ' + msg);
         let contract = msg.contract
         let path = basePath + contract.owner + "/" + contract.id + "/"
-        if (contract.type === "Rust") {
-            let targetPath = basePath + contract.owner + "/target"
-            command = `cargo test --target-dir ${targetPath}`
-        } else {
-            command = "npm run test --no-color"
-        }
+        let wasmFilePath = path + "out/contract.wasm"
+        let command = `near deploy --accountId ${contract.name} --wasmFile ${wasmFilePath} --masterAccount ${contract.owner}`
+
         let data = {
             contract: contract,
             command: command,
             path: path,
-            method: "test"
+            method: "deploy"
         }
-        console.log("run tests: ",data)
-        console.log('message: ' + msg);
 
         shellHelper.runShell(data, io)
-
     });
 });
 

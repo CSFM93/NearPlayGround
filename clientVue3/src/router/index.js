@@ -17,7 +17,7 @@ const router = createRouter({
       component: Projects
     },
     {
-      path: '/contract/:contractName',
+      path: '/contract/:contractId',
       name: 'contract',
       component: Project
     },

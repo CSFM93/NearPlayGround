@@ -89,6 +89,7 @@ import { useQuasar } from "quasar";
 import { ref } from "vue";
 
 import { useContractStore } from "@/stores/contract";
+import socketService from "../components/socketService";
 
 export default {
   name: "Contracts",
@@ -97,7 +98,7 @@ export default {
     btnDelete: false,
     btnLoading: false,
     tableKey: "key",
-    contract:{},
+    contract: {},
     account: {},
     projectTypes: ["Rust", "AssemblyScript"],
     columns: [
@@ -149,12 +150,12 @@ export default {
     editedIndex: -1,
     editedItem: {
       id: "",
-      name: "",
+      name: "a31.csfm1993.testnet",
       type: "Rust",
     },
     defaultItem: {
       id: "",
-      name: "",
+      name: "a31.csfm1993.testnet",
       type: "Rust",
     },
   }),
@@ -174,7 +175,7 @@ export default {
           color: color,
         });
       },
-      contractStore
+      contractStore,
     };
   },
   watch: {
@@ -205,6 +206,10 @@ export default {
       this.dialog = true;
     },
     async initialize() {
+      socketService.socket.on("log", (data) => {
+        console.log("log", JSON.stringify(data, null, 2));
+      });
+
       this.contract = new nearAPI.Contract(
         this.account,
         "c8.nino1993.testnet",
@@ -247,7 +252,7 @@ export default {
       let data = { contract: item };
       actions.deleteProjectDirectory(data);
       this.rows.splice(index, 1);
-      this.showNotification("Contract deleted successfuly", "positive");
+      this.showNotification("Contract deleted successfully", "positive");
       this.btnDelete = false;
     },
     close() {
@@ -271,10 +276,11 @@ export default {
           .then(async (res) => {
             console.log(res);
             let data = { contract: item };
+
             await actions.createProjectDirectory(data).then((res) => {
               if (res) {
                 this.showNotification(
-                  "Project created successfuly",
+                  "Project created successfully",
                   "positive"
                 );
               } else {
@@ -285,7 +291,6 @@ export default {
               }
             });
             this.rows.push(item);
-            this.showNotification("Project created successfuly", "positive");
           });
         this.btnLoading = false;
       } catch (error) {
@@ -296,8 +301,8 @@ export default {
     async viewProject(item) {
       let route = "contract";
 
-      await this.contractStore.setContract(item)
-      this.$route.params.contractName = item.name;
+      await this.contractStore.setContract(item);
+      this.$route.params.contractId = item.id;
       if (this.$route.name !== route) {
         this.$router.push({ name: route }).catch((error) => {});
       }
