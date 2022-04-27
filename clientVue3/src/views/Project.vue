@@ -23,7 +23,7 @@
                 @click="changeActiveTab(i)"
               >
                 <q-icon :name="tab1.icon" size="lg" />
-                <q-tooltip>{{ tab1.tooltip }}</q-tooltip>
+                <q-tooltip class="bg-black text-subtitle1">{{ tab1.tooltip }}</q-tooltip>
               </q-tab>
             </q-tabs>
           </template>

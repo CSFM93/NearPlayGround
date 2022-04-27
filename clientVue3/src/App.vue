@@ -15,14 +15,14 @@
             <div class="q-ml-md">
               <q-btn
                 no-caps
-                class="text-primary"
+                class="text-primary text-subtitle1"
                 flat
                 @click="navigateTo('contracts')"
                 >Contracts</q-btn
               >
             </div>
             <div class="q-ml-md">
-              <q-btn no-caps class="text-negative" @click="logout" flat
+              <q-btn no-caps class="text-negative text-subtitle1" @click="logout" flat
                 >Sign out</q-btn
               >
             </div>
