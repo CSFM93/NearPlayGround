@@ -4,8 +4,59 @@ import { saveAs } from 'file-saver';
 const actions = {}
 const BASE_URL = import.meta.env.VITE_SERVER
 
-//  FILE MANAGER
 
+
+//  CONTRACTS
+
+actions.addContract = async (data) => {
+  let url = BASE_URL + `/contract`
+
+  let contract = await axios.post(url, { data: data }).then(res => {
+    if (res.data.error) {
+      console.log("error adding contract to DB")
+      return false
+    } else {
+      console.log("axios response", res.data)
+      return res.data.newDoc
+    }
+  })
+  return contract
+}
+
+
+actions.getContracts = async (data) => {
+  let url = BASE_URL + `/contracts?accountId=${data.accountId}`
+
+  let contract = await axios.get(url).then(res => {
+    if (res.data.error) {
+      console.log("error retrieving contracts ")
+      return false
+    } else {
+      console.log("axios response", res.data)
+      return res.data.contracts
+    }
+  })
+  return contract
+}
+
+actions.removeContract = async (data) => {
+  let url = BASE_URL + `/contract?contractId=${data.contractId}&accountId=${data.accountId}`
+
+  let contract = await axios.delete(url).then(res => {
+    if (res.data.error) {
+      console.log("error removing contract ")
+      return false
+    } else {
+      console.log("axios response", res.data)
+      return res.data
+    }
+  })
+  return contract
+}
+
+
+
+//  FILE MANAGER
 
 actions.createProjectDirectory = async (data) => {
 

@@ -81,7 +81,6 @@
 
 
 <script>
-import * as nearAPI from "near-api-js";
 import { v4 as uuidv4 } from "uuid";
 import actions from "../components/actions";
 import { useQuasar } from "quasar";
@@ -122,13 +121,6 @@ export default {
         align: "left",
         label: "Type",
         field: (row) => row.type,
-        sortable: true,
-      },
-      {
-        name: "owner",
-        align: "left",
-        label: "Contract owner",
-        field: (row) => row.owner,
         sortable: true,
       },
       {
@@ -209,30 +201,13 @@ export default {
       socketService.socket.on("log", (data) => {
         console.log("log", JSON.stringify(data, null, 2));
       });
-
-      this.contract = new nearAPI.Contract(
-        this.account,
-        "c8.nino1993.testnet",
-        {
-          viewMethods: ["getContracts"],
-          changeMethods: ["removeContract", "addContract"],
-          sender: this.account,
-        }
-      );
-
       try {
-        let contracts = await this.contract.getContracts({
-          accountId: this.account.accountId,
-        });
+        let data = { accountId: this.account.accountId };
+        let contracts = await actions.getContracts(data);
         console.log("contracts found: ", contracts);
         if (contracts.length > 0) {
-          // this.row = null
           this.rows = [];
           this.rows.push(...contracts);
-          setTimeout(() => {
-            this.tableKey = "newdddddd";
-          }, 5000);
-          console.log("rows: ", this.rows);
         }
       } catch (error) {
         console.log(`error: ${error}`);
@@ -248,7 +223,10 @@ export default {
       const index = this.rows.indexOf(item);
       this.btnDelete = true;
       confirm("Are you sure you want to delete this contract?") &&
-        (await this.contract.removeContract({ id: item.id }));
+        (await actions.removeContract({
+          contractId: item.id,
+          accountId: this.account.accountId,
+        }));
       let data = { contract: item };
       actions.deleteProjectDirectory(data);
       this.rows.splice(index, 1);
@@ -271,27 +249,23 @@ export default {
       console.table(item);
 
       try {
-        await this.contract
-          .addContract({ id: item.id, name: item.name, type: item.type })
-          .then(async (res) => {
-            console.log(res);
-            let data = { contract: item };
+        let data = { accountId: this.account.accountId, contract: item };
+        await actions.addContract(data).then(async (res) => {
+          console.log(res);
+          let data = { contract: item };
 
-            await actions.createProjectDirectory(data).then((res) => {
-              if (res) {
-                this.showNotification(
-                  "Project created successfully",
-                  "positive"
-                );
-              } else {
-                this.showNotification(
-                  "Failed to create project directory",
-                  "negative"
-                );
-              }
-            });
-            this.rows.push(item);
+          await actions.createProjectDirectory(data).then((res) => {
+            if (res) {
+              this.showNotification("Project created successfully", "positive");
+            } else {
+              this.showNotification(
+                "Failed to create project directory",
+                "negative"
+              );
+            }
           });
+          this.rows.push(item);
+        });
         this.btnLoading = false;
       } catch (error) {
         this.showNotification("Failed to add project", "negative");

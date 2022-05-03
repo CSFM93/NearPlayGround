@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="logContainer">
     <q-tabs v-model="tab" content-class="items-start">
       <q-tab class="" name="logs">Logs</q-tab>
     </q-tabs>
@@ -39,7 +39,7 @@ export default {
   },
   mounted() {
     let myTabs = document.getElementsByClassName("q-tabs__content")[2];
-    console.log(myTabs)
+    console.log(myTabs);
 
     if (myTabs.classList.contains("items-center")) {
       myTabs.className = myTabs.className.replace(
@@ -74,8 +74,7 @@ export default {
 
 <style scoped>
 .logContainer {
-  max-height: 50vh;
-  overflow-y: scroll;
-  overflow-x: hidden;
+  background-color:#1D1D1D;
+  height: 100%;
 }
 </style>

@@ -5,6 +5,19 @@ const fileSystemExplorer = require('file-system-explorer');
 const fsExplorer = new fileSystemExplorer.FileSystemExplorer();
 
 
+
+let checkIfFileExists = (path) => {
+    try {
+        if (fs.existsSync(path)) {
+            return true
+        }
+    } catch (err) {
+        console.error(err)
+        return false
+    }
+}
+
+
 let createProjectDirectory = (projectPath, templatePath) => {
     try {
         let createdDirectory = fs.mkdirSync(projectPath, { recursive: true })
@@ -48,15 +61,11 @@ let copyFolder = (templatePath, destination) => {
 }
 
 
-// createProjectDirectory(path)
 
 
-// let path = "/home/csfm1993/Documents/projects/near/guide/rust-counter/Smart Contract"
-// getFileStructure(path)
+
 let getFileTree = (path) => {
     const myPathTree = fsExplorer.createFileSystemTree(path);
-    // console.log(myPathTree)
-    // console.log(JSON.stringify(myPathTree, null, 2))
     return myPathTree
 
 }
@@ -148,10 +157,6 @@ let downloadProjectAssembly = async (folderPath, filePath) => {
 
 
 }
-// let path = "/home/csfm1993/Documents/projects/near/guide/users/csfm1993.testnet/3e4aa991-76cc-4165-9683-70b518906797"
-// let filePath = "/home/csfm1993/Documents/projects/near/guide/users/csfm1993.testnet/project.zip"
-// downloadProjectAssembly(path, filePath)
-
 
 
 let getText = (path) => {
@@ -182,9 +187,6 @@ let getCompiledContract = (path) => {
     try {
         let contract = fs.readFileSync(path)
         console.log('contract', contract)
-        // let contractStr = contract.toString('base64')
-        // console.log('contract str',contractStr)
-
         return contract
     } catch (error) {
         console.error(error)
@@ -209,15 +211,10 @@ let getManifest = (path) => {
 
 }
 
-// let path = "/home/csfm1993/Documents/projects/near/guide/users/csfm1993.testnet/3e4aa991-76cc-4165-9683-70b518906797/NearPGManifest.json"
-// getManifest(path)
-
-
-// addUser()
 
 module.exports = {
     saveText, getFileTree, getCompiledContract, createFile,
     deleteFile, renameFile, downloadProject, downloadProjectAssembly, getText,
-    createProjectDirectory, deleteProjectDirectory, copyFolder,getManifest
+    createProjectDirectory, deleteProjectDirectory, copyFolder, getManifest, checkIfFileExists
 }
 

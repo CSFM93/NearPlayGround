@@ -52,7 +52,7 @@
           </template>
         </q-splitter>
       </template>
-      <template v-slot:after>
+      <template v-slot:after >
         <div>
           <q-splitter
             v-model="splitterModel3"
@@ -66,7 +66,7 @@
               </div>
             </template>
 
-            <template v-slot:after>
+            <template v-slot:after >
               <Logs />
             </template>
           </q-splitter>

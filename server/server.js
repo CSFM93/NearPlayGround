@@ -1,4 +1,5 @@
 const cors = require("cors")
+const StormDB = require("stormdb");
 var express = require('express');
 var app = express();
 var server = require('http').Server(app);
@@ -22,6 +23,8 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }))
 app.use(express.static('uploads'))
 app.use(express.static(path));
 
+
+// SOCKET 
 
 io.on('connection', (socket) => {
     console.log('a user connected')
@@ -133,6 +136,99 @@ io.on('connection', (socket) => {
 app.get('/', (req, res) => {
     res.send('Successful response.');
 });
+
+
+
+// CONTRACTS DB
+
+app.post('/contract', async (req, res) => {
+    try {
+        let data = req.body.data
+        console.log('req data: ', data)
+        let dbPath = basePath + data.accountId + "/npg.stormdb"
+        const engine = new StormDB.localFileEngine(dbPath);
+        const db = new StormDB(engine);
+
+        let contract = data.contract
+        db.get("contracts").push(contract);
+        await db.save();
+        console.log('data saved')
+        res.send({ newDoc: newDoc, error: false })
+
+    } catch (error) {
+        let response = { error: true }
+        res.send(response);
+    }
+})
+
+
+app.get('/contracts', async (req, res) => {
+    try {
+        let data = req.query
+        console.log('req data: ', data)
+        let dbPath = basePath + data.accountId + "/npg.stormdb"
+        let dbExists = fileManager.checkIfFileExists(dbPath)
+        if (!dbExists) {
+            const engine = new StormDB.localFileEngine(dbPath);
+            const db = new StormDB(engine);
+            db.default({ contracts: [] });
+            await db.save()
+            let docs = []
+            res.send({ contracts: docs, error: false })
+        } else {
+            const engine = new StormDB.localFileEngine(dbPath);
+            const db = new StormDB(engine);
+            let docs = db.get("contracts").value()
+            console.log('docs: ', docs)
+            res.send({ contracts: docs, error: false })
+        }
+
+
+
+
+    } catch (error) {
+        console.log('error: ', error)
+        let response = { error: true }
+        res.send(response);
+    }
+})
+
+
+app.delete('/contract', async (req, res) => {
+    try {
+        let data = req.query
+        let contractId = data.contractId
+        console.log('req data: ', data)
+
+        let dbPath = basePath + data.accountId + "/npg.stormdb"
+        const engine = new StormDB.localFileEngine(dbPath);
+        const db = new StormDB(engine);
+        let items = db.get("contracts").value()
+        console.log('items: ', items)
+        let deleteIndex = -1
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].id === contractId) {
+                console.log('found: ', items[i])
+                deleteIndex = i
+                break;
+            }
+        }
+        if (deleteIndex > -1) {
+            db.get("contracts")
+                .get(deleteIndex)
+                .delete(true);
+            db.save()
+            res.send({ error: false })
+        } else {
+            res.send({ error: true })
+        }
+    } catch (error) {
+        console.log('error: ', error)
+        let response = { error: true }
+        res.send(response);
+    }
+})
+
 
 
 

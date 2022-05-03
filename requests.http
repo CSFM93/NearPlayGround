@@ -1,0 +1,1 @@
+GET http://localhost:3000/contracts?accountId=csfm1993.testnet
