@@ -2,6 +2,7 @@
   <div>
     <q-splitter v-model="splitterModel">
       <template v-slot:before>
+        
         <q-splitter
           v-model="splitterModel2"
           style="width: 100%; height: 92vh"
@@ -23,7 +24,9 @@
                 @click="changeActiveTab(i)"
               >
                 <q-icon :name="tab1.icon" size="lg" />
-                <q-tooltip class="bg-black text-subtitle1">{{ tab1.tooltip }}</q-tooltip>
+                <q-tooltip class="bg-black text-subtitle1">{{
+                  tab1.tooltip
+                }}</q-tooltip>
               </q-tab>
             </q-tabs>
           </template>
@@ -45,14 +48,14 @@
                 <CompileView />
               </q-tab-panel>
 
-              <q-tab-panel name="Deploy and call" style="height: 92vh" >
+              <q-tab-panel name="Deploy and call" style="height: 92vh">
                 <DeployView />
               </q-tab-panel>
             </q-tab-panels>
           </template>
         </q-splitter>
       </template>
-      <template v-slot:after >
+      <template v-slot:after>
         <div>
           <q-splitter
             v-model="splitterModel3"
@@ -66,7 +69,7 @@
               </div>
             </template>
 
-            <template v-slot:after >
+            <template v-slot:after>
               <Logs />
             </template>
           </q-splitter>
@@ -105,9 +108,9 @@ export default {
     Logs,
   },
   data: () => ({
-    tab: ref("Deploy and call"),
+    tab: ref("Write"),
     splitterModel: ref(22),
-    splitterModel2: ref(15),
+    splitterModel2: ref(16),
     splitterModel3: ref(15),
     activeTab: null,
     contract: {},
@@ -123,12 +126,10 @@ export default {
       { icon: this.mdiTestTube, tooltip: "Test and Compile" },
       { icon: this.mdiCloudUpload, tooltip: "Deploy and call" },
     ];
-    this.initialize();
   },
   setup() {
     const contractStore = useContractStore();
 
-    // console.log("project contract: ",contractStore.contract)
     const $q = useQuasar();
     return {
       showNotification(message, color) {
@@ -141,11 +142,6 @@ export default {
     };
   },
   methods: {
-    async initialize() {
-      // this.contract = await this.$store.state.contract;
-      // console.log("contract", this.contractStore);
-      // return this.contract;
-    },
     changeActiveTab(i) {
       if (i == 2) {
         this.getManifest();
@@ -159,4 +155,5 @@ export default {
 </script>
 
 <style >
+
 </style>

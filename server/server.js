@@ -35,7 +35,7 @@ io.on('connection', (socket) => {
         let contract = msg.contract
         console.log('message: ' + contract);
         let path = basePath
-        let command = `near create-account ${contract.name} --masterAccount ${contract.owner} --initialBalance 2`
+        let command = `near create-account ${contract.name} --masterAccount ${contract.owner} --initialBalance 25`
         console.log('command: ', command)
         let data = {
             contract: contract,
@@ -461,6 +461,36 @@ app.post('/saveText', async (req, res) => {
             res.send(response);
         }
 
+    } catch (error) {
+        console.log('error: ', error)
+        let response = { error: true }
+        res.send(response);
+    }
+})
+
+
+app.get('/backupProjects', async (req, res) => {
+    try {
+        console.log(req.query)
+        let accountId = req.query.accountId
+        let folderPath = basePath + accountId + "/" 
+        let filePath = basePath + accountId + "/" + "backup.zip"
+
+        let preparedFile = await fileManager.backupProjects(folderPath,filePath)
+
+        if (preparedFile) {
+            res.sendFile(filePath, function (err) {
+                if (err) {
+                    console.log(err)
+                    next(err);
+                } else {
+                    console.log('Sent:', path);
+                }
+            });
+        } else {
+            let response = { error: true }
+            res.send(response);
+        }
     } catch (error) {
         console.log('error: ', error)
         let response = { error: true }

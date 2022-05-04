@@ -168,8 +168,6 @@ actions.downloadProject = async (contract) => {
     console.log("error: ", error)
     return false
   }
-
-
 }
 
 
@@ -204,6 +202,32 @@ actions.saveText = async (data) => {
   })
   return status
 }
+
+actions.backupProjects = async (accountId) => {
+  try {
+    let url = BASE_URL + `/backupProjects?accountId=${accountId}`
+    await axios
+      .get(url, { responseType: 'blob' })
+      .then(response => {
+        var fileURL = window.URL.createObjectURL(new Blob([response.data]));
+        var fileLink = document.createElement('a');
+
+        fileLink.href = fileURL;
+        fileLink.setAttribute('download', 'project.zip');
+        document.body.appendChild(fileLink);
+
+        fileLink.click();
+      })
+    // await saveAs(url, "backup.zip")
+
+    return true
+  } catch (error) {
+    console.log("error: ", error)
+    return false
+  }
+}
+
+
 
 // Compile
 

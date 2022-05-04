@@ -13,6 +13,14 @@
 
         <q-space />
         <q-btn
+          class="q-my-lg q-mr-lg"
+          color="primary"
+          label="Backup"
+          :disable="btnLoading"
+          :loading="btnLoading"
+          @click="backup"
+        />
+        <q-btn
           class="q-my-lg"
           color="primary"
           label="New Contract"
@@ -85,8 +93,6 @@ import { v4 as uuidv4 } from "uuid";
 import actions from "../components/actions";
 import { useQuasar } from "quasar";
 
-import { ref } from "vue";
-
 import { useContractStore } from "@/stores/contract";
 import socketService from "../components/socketService";
 
@@ -142,12 +148,12 @@ export default {
     editedIndex: -1,
     editedItem: {
       id: "",
-      name: "a31.csfm1993.testnet",
+      name: "",
       type: "Rust",
     },
     defaultItem: {
       id: "",
-      name: "a31.csfm1993.testnet",
+      name: "",
       type: "Rust",
     },
   }),
@@ -272,11 +278,24 @@ export default {
         this.btnLoading = false;
       }
     },
+    async backup() {
+      this.btnLoading = true;
+      await actions.backupProjects(this.account.accountId).then((res) => {
+        if (res) {
+          this.btnLoading = false;
+          this.showNotification("Backup successful", "positive");
+        } else {
+          this.btnLoading = false;
+          this.showNotification("Failed to backup projects", "negative");
+        }
+      });
+    },
     async viewProject(item) {
       let route = "contract";
 
       await this.contractStore.setContract(item);
-      this.$route.params.contractId = item.id;
+      let contractName = item.name.split(".")[0];
+      this.$route.params.contractName = contractName;
       if (this.$route.name !== route) {
         this.$router.push({ name: route }).catch((error) => {});
       }

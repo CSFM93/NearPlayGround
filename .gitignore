@@ -4,6 +4,7 @@
 */dist/
 
 **.zip
+requests.http
 
 # Log files
 npm-debug.log*

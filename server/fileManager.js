@@ -137,7 +137,7 @@ let downloadProject = async (folderPath, filePath) => {
 
 let downloadProjectAssembly = async (folderPath, filePath) => {
 
-    const output = await fs.createWriteStream(filePath);
+    const output = fs.createWriteStream(filePath);
     const archive = archiver('zip', {
         zlib: { level: 9 } // Sets the compression level.
     });
@@ -212,9 +212,32 @@ let getManifest = (path) => {
 }
 
 
+let backupProjects = async (folderPath, filePath) => {
+
+    const output = fs.createWriteStream(filePath);
+    const archive = archiver('zip', {
+        zlib: { level: 9 }
+    });
+
+    return new Promise(async (resolve, reject) => {
+        archive.glob('**', { ignore: ["**/node_modules/**", "**/target/**", "**.zip"], cwd: folderPath })
+            .on('error', (err) => {
+                console.log('err: ', err)
+                reject(err)
+            })
+            .pipe(output)
+            ;
+
+        output.on('close', () => resolve(true));
+        await archive.finalize();
+    });
+
+
+}
+
 module.exports = {
     saveText, getFileTree, getCompiledContract, createFile,
     deleteFile, renameFile, downloadProject, downloadProjectAssembly, getText,
-    createProjectDirectory, deleteProjectDirectory, copyFolder, getManifest, checkIfFileExists
+    createProjectDirectory, deleteProjectDirectory, copyFolder, getManifest, checkIfFileExists, backupProjects
 }
 

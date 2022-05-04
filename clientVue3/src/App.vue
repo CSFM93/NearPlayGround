@@ -3,7 +3,10 @@
     <q-layout container style="height: 100vh" class="">
       <q-header elevated>
         <q-toolbar class="bg-dark t-bar">
-          <q-toolbar-title class="cursor-pointer" @click="navigateTo('home')">
+          <q-toolbar-title
+            class="cursor-pointer text-primary"
+            @click="navigateTo('home')"
+          >
             Near Playground</q-toolbar-title
           >
           <template v-if="isAuthenticated">
@@ -22,7 +25,11 @@
               >
             </div>
             <div class="q-ml-md">
-              <q-btn no-caps class="text-negative text-subtitle1" @click="logout" flat
+              <q-btn
+                no-caps
+                class="text-negative text-subtitle1"
+                @click="logout"
+                flat
                 >Sign out</q-btn
               >
             </div>
@@ -78,23 +85,10 @@
 <script>
 import SocketService from "./components/socketService";
 import { useQuasar } from "quasar";
-import * as b from "bip39";
-// import crypto from 'crypto'
 
 // NAVBAR
 import * as nearAPI from "near-api-js";
-import { SignedTransaction } from "near-api-js/lib/transaction";
-// console.log(nearAPI);
-const {
-  connect,
-  keyStores,
-  WalletConnection,
-  KeyPair,
-
-  utils,
-  transactions,
-  accountCreator,
-} = nearAPI;
+const { connect, keyStores, WalletConnection } = nearAPI;
 const keyStore = new keyStores.BrowserLocalStorageKeyStore();
 
 const config = {
@@ -182,10 +176,6 @@ export default {
         this.$router.push({ name: route }).catch((error) => {});
       }
     },
-    async setAccount(value) {
-      // await this.$store.commit("setAccount", value);
-      //   console.log("account", this.$store.state.account);
-    },
     closeDialog() {
       this.dialog = false;
       this.$nextTick(() => {
@@ -194,18 +184,15 @@ export default {
       });
     },
     async login() {
-      // console.log("login", this.username);
       this.btnLoginLoading = true;
       wallet.requestSignIn(this.username, "Near Playground");
     },
     async logout() {
       localStorage.clear();
 
-      // console.log("clearing");
       await wallet.signOut();
-      // console.log(wallet.isSignedIn());
       this.isAuthenticated = false;
-      this.setAccount({});
+
       this.showNotification("Logout sucessfull", "positive");
     },
     handleCurrentUser() {},
@@ -219,18 +206,13 @@ export default {
           let state = await account.state();
           console.log("state: ", state);
           account.createAndDeployContract;
-          // let res = await account.deployContract().
 
-          let keys = await account.getAccessKeys();
-          console.log("keys: ", keys);
           this.nearAddress = account.accountId;
           this.showNotification(
             `Welcome back ${account.accountId}`,
             "positive"
           );
           this.username = account.accountId;
-
-          this.setAccount(account);
           this.isAuthenticated = true;
 
           let query = {
@@ -239,7 +221,6 @@ export default {
           this.$router.replace({
             query: query,
           });
-          // console.log(this.$router);
           this.emitter.emit("sendAccount", account);
         } else {
           console.log("is signed in ?", wallet.isSignedIn());
@@ -263,9 +244,7 @@ export default {
   height: 40vh;
 }
 
-
 .t-bar {
   z-index: 1000000 !important;
 }
-
 </style>
