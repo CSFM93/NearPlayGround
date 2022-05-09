@@ -29,7 +29,7 @@ Open your browser and navigate to http://localhost:3000
 
 Make sure you have Node.js and all Rust dependencies for Near smart contract development before running the following commands. 
 
-Install pm2 ,Clone the repository and navigate to the `client` directory:
+Install pm2 ,Clone the repository and navigate to the `clientV3` directory:
 
 ```bash
 npm i -g pm2
