@@ -5,6 +5,7 @@
 
 **.zip
 requests.http
+notes.md
 
 # Log files
 npm-debug.log*

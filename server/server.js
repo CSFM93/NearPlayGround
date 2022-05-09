@@ -3,6 +3,19 @@ const StormDB = require("stormdb");
 var express = require('express');
 var app = express();
 var server = require('http').Server(app);
+
+const multer = require('multer')
+const storage = multer.diskStorage({
+    destination: function (req, file, callback) {
+        callback(null, 'NearPG/temp/');
+    },
+    filename: function (req, file, callback) {
+        callback(null, file.originalname); // <-- CHANGE HERE
+    }
+})
+const upload = multer({ storage: storage });
+
+
 const io = require("socket.io")(server,
     {
         cors: {
@@ -473,10 +486,10 @@ app.get('/backupProjects', async (req, res) => {
     try {
         console.log(req.query)
         let accountId = req.query.accountId
-        let folderPath = basePath + accountId + "/" 
+        let folderPath = basePath + accountId + "/"
         let filePath = basePath + accountId + "/" + "backup.zip"
 
-        let preparedFile = await fileManager.backupProjects(folderPath,filePath)
+        let preparedFile = await fileManager.backupProjects(folderPath, filePath)
 
         if (preparedFile) {
             res.sendFile(filePath, function (err) {
@@ -497,6 +510,26 @@ app.get('/backupProjects', async (req, res) => {
         res.send(response);
     }
 })
+
+
+app.post('/restoreBackup', upload.single('backup'),async  function (req, res, next) {
+    try {
+        console.log('file', req.file)
+        console.log('data', req.body.accountId)
+        let path = basePath + req.body.accountId
+        let backupFilePath = req.file.path
+        let restoredBackup = await fileManager.restoreBackup(path, backupFilePath)
+        let response = { error: false, success: restoredBackup }
+        res.send(response);
+    } catch (error) {
+        let response = { error: true, success: false }
+        res.send(response);
+    }
+    // req.file is the `avatar` file
+    // req.body will hold the text fields, if there were any
+
+})
+
 
 // DEPLOY
 app.get('/getContract', async (req, res) => {

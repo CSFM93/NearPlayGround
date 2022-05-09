@@ -3,6 +3,7 @@ const fse = require('fs-extra')
 const archiver = require('archiver');
 const fileSystemExplorer = require('file-system-explorer');
 const fsExplorer = new fileSystemExplorer.FileSystemExplorer();
+var AdmZip = require("adm-zip");
 
 
 
@@ -235,9 +236,40 @@ let backupProjects = async (folderPath, filePath) => {
 
 }
 
+
+let restoreBackup = async (projectPath, backupFilePath) => {
+    try {
+        let createdDirectory = fs.mkdirSync(projectPath, { recursive: true })
+        console.log(createdDirectory)
+        let extractedFiles = await extractFiles(projectPath, backupFilePath)
+        if (extractedFiles) {
+            return true
+        } else {
+            return false
+        }
+    } catch (error) {
+        console.log('error restoring backup', error)
+        return false
+    }
+
+}
+
+let extractFiles = async (destination, zipFilePath) => {
+    try {
+        var zip = new AdmZip(zipFilePath);
+        await zip.extractAllTo(destination, true);
+        console.log('Extraction complete')
+        return true
+    } catch (error) {
+        console.log('error extracting files', error)
+        return false
+    }
+}
+
 module.exports = {
     saveText, getFileTree, getCompiledContract, createFile,
     deleteFile, renameFile, downloadProject, downloadProjectAssembly, getText,
-    createProjectDirectory, deleteProjectDirectory, copyFolder, getManifest, checkIfFileExists, backupProjects
+    createProjectDirectory, deleteProjectDirectory, copyFolder, getManifest, checkIfFileExists,
+    backupProjects, restoreBackup
 }
 
