@@ -7,7 +7,6 @@ import inject from '@rollup/plugin-inject'
 
 import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
 
-
 export default defineConfig({
   plugins: [
     vue({
@@ -23,5 +22,13 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
+  },
+  optimizeDeps: {
+    include: ['near-api-js'],
+},
+  build: {
+    minify: false,
+    sourcemap: true // < this allows the browser to point you to the correct file 
   }
 })
+

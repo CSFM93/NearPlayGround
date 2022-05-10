@@ -87,10 +87,10 @@ import SocketService from "./components/socketService";
 import { useQuasar } from "quasar";
 
 // NAVBAR
-import * as nearAPI from "near-api-js";
-const { connect, keyStores, WalletConnection } = nearAPI;
+import "near-api-js/dist/near-api-js.min.js";
+const { connect, keyStores, WalletConnection } = window.nearApi;
 const keyStore = new keyStores.BrowserLocalStorageKeyStore();
-
+console.log("here", window.nearApi);
 const config = {
   networkId: "testnet",
   keyStore,

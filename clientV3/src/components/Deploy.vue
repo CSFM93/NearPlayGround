@@ -143,7 +143,10 @@
 
 <script>
 import actions from "./actions";
-import * as nearAPI from "near-api-js";
+import "near-api-js/dist/near-api-js.min.js";
+const { Contract } = window.nearApi;
+
+
 import socketService from "./socketService";
 
 import { useContractStore } from "@/stores/contract";
@@ -231,24 +234,7 @@ export default {
             subAccountID: this.contract.name,
           };
           this.emitter.emit("deploy", data);
-          // await this.deployContract(compiledContract, this.contract.name);
-          // await account
-          //   .deployContract(compiledContract)
-          //   .then((res) => {
-          //     // console.log("res", res);
-          //     this.emitter.emit("log", res);
-          //     let params = [
-          //       `Contract successfully deployed to account ${account.accountId} `,
-          //       "positive",
-          //     ];
-          //     this.showNotification(params[0], params[1]);
-          //   })
-          //   .catch((error) => {
-          //     console.log("error", error);
-          //     this.emitter.emit("log", error);
-          //     let params = ["Failed to deploy contract", "negative"];
-          //     this.showNotification(params[0], params[1]);
-          //   });
+       
           this.btnDeploy = false;
         }
       } catch (error) {
@@ -291,7 +277,7 @@ export default {
 
         console.log("payload: ", this.viewMethods[i]);
 
-        const contract = new nearAPI.Contract(
+        const contract = new Contract(
           this.account,
           this.contract.name,
           {

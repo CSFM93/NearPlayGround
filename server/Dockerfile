@@ -11,7 +11,7 @@ RUN apt update
 RUN apt install curl build-essential -y
 RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
 RUN apt -y install nodejs
-RUN npm install pm2 -g
+RUN npm install pm2 near-cli -g
 RUN apt-get -y install libclang-dev
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"

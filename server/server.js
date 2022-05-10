@@ -1,8 +1,9 @@
 const cors = require("cors")
+let history = require('connect-history-api-fallback');
 const StormDB = require("stormdb");
-var express = require('express');
-var app = express();
-var server = require('http').Server(app);
+let express = require('express');
+let app = express();
+let server = require('http').Server(app);
 
 const multer = require('multer')
 const storage = multer.diskStorage({
@@ -31,6 +32,7 @@ let basePath = __dirname + "/NearPG/Users/"
 
 
 app.use(cors())
+app.use(history());
 app.use(express.json({ limit: '50mb' }))
 app.use(express.urlencoded({ limit: '50mb', extended: true }))
 app.use(express.static('uploads'))

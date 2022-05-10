@@ -1,4 +1,4 @@
-import axios from "axios"
+import axios from "redaxios"
 import { saveAs } from 'file-saver';
 
 const actions = {}
@@ -232,11 +232,7 @@ actions.restoreProjects = async (backupFile,accountId) => {
     var formData = new FormData();
     formData.append("backup", backupFile)
     formData.append("accountId",accountId)
-    let status = await axios.post(url, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }).then(res =>{
+    let status = await axios.post(url, formData).then(res =>{
        console.log(res.data)
        return res.data.success
     })

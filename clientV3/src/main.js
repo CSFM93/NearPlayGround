@@ -20,6 +20,8 @@ app.use(Quasar, {
     plugins: { Notify }, 
 })
 
+window.require = (name) => new URL(name, import.meta.url).href;
+
 app.config.globalProperties.emitter = emitter;
 
 
