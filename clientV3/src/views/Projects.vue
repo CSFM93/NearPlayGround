@@ -119,7 +119,7 @@
 
 <script>
 import { v4 as uuidv4 } from "uuid";
-import actions from "../components/actions";
+import actions from "../components/actions.js";
 import { useQuasar } from "quasar";
 import { ref } from "vue";
 

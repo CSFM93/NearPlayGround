@@ -25,9 +25,21 @@ actions.addContract = async (data) => {
 
 
 actions.getContracts = async (data) => {
-  let url = BASE_URL + `/contracts?accountId=${data.accountId}`
+  let url = BASE_URL + `/allContracts?accountId=${data.accountId}`
 
-  let contract = await axios.get(url).then(res => {
+  // let contracts = await fetch(url).then(async (res) => {
+  //   let data = await res.json()
+  //   console.log('data: ', data)
+  //   if (data.error) {
+  //     console.log("error retrieving contracts ")
+  //     return false
+  //   } else {
+  //     console.log("axios response", res.data)
+  //     return data.contracts
+  //   }
+  // })
+
+  let contracts = await axios.get(url).then(res => {
     if (res.data.error) {
       console.log("error retrieving contracts ")
       return false
@@ -36,7 +48,7 @@ actions.getContracts = async (data) => {
       return res.data.contracts
     }
   })
-  return contract
+  return contracts
 }
 
 actions.removeContract = async (data) => {
@@ -226,15 +238,26 @@ actions.backupProjects = async (accountId) => {
   }
 }
 
-actions.restoreProjects = async (backupFile,accountId) => {
+actions.restoreProjects = async (backupFile, accountId) => {
   try {
     let url = BASE_URL + `/restoreBackup`
     var formData = new FormData();
     formData.append("backup", backupFile)
-    formData.append("accountId",accountId)
-    let status = await axios.post(url, formData).then(res =>{
-       console.log(res.data)
-       return res.data.success
+    formData.append("accountId", accountId)
+
+
+    // let status = fetch(url, {
+    //   method: 'post',
+    //   body: formData,
+    // }).then(async (res) => {
+    //   let data = await res.json()
+    //   console.log(data)
+    //   return res.data.success
+    // })
+
+    let status = await axios.post(url, formData).then(res => {
+      console.log(res.data)
+      return res.data.success
     })
 
     return status

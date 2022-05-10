@@ -1,5 +1,5 @@
 const cors = require("cors")
-let history = require('connect-history-api-fallback');
+// let history = require('connect-history-api-fallback');
 const StormDB = require("stormdb");
 let express = require('express');
 let app = express();
@@ -11,9 +11,10 @@ const storage = multer.diskStorage({
         callback(null, 'NearPG/temp/');
     },
     filename: function (req, file, callback) {
-        callback(null, file.originalname); // <-- CHANGE HERE
+        callback(null, file.originalname);
     }
 })
+
 const upload = multer({ storage: storage });
 
 
@@ -32,10 +33,9 @@ let basePath = __dirname + "/NearPG/Users/"
 
 
 app.use(cors())
-app.use(history());
+// app.use(history());
 app.use(express.json({ limit: '50mb' }))
 app.use(express.urlencoded({ limit: '50mb', extended: true }))
-app.use(express.static('uploads'))
 app.use(express.static(path));
 
 
@@ -177,7 +177,7 @@ app.post('/contract', async (req, res) => {
 })
 
 
-app.get('/contracts', async (req, res) => {
+app.get('/allContracts', async (req, res) => {
     try {
         let data = req.query
         console.log('req data: ', data)
@@ -514,8 +514,9 @@ app.get('/backupProjects', async (req, res) => {
 })
 
 
-app.post('/restoreBackup', upload.single('backup'),async  function (req, res, next) {
+app.post('/restoreBackup', upload.single('backup'), async function (req, res, next) {
     try {
+        console.log('headers: ',req.headers)
         console.log('file', req.file)
         console.log('data', req.body.accountId)
         let path = basePath + req.body.accountId
@@ -524,6 +525,7 @@ app.post('/restoreBackup', upload.single('backup'),async  function (req, res, ne
         let response = { error: false, success: restoredBackup }
         res.send(response);
     } catch (error) {
+        console.log(error)
         let response = { error: true, success: false }
         res.send(response);
     }
