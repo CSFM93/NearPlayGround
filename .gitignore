@@ -4,7 +4,7 @@
 */dist/
 
 **.zip
-requests.http
+reqs.http
 notes.md
 
 # Log files

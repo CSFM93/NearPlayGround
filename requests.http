@@ -1,5 +1,0 @@
-# GET http://localhost:3000/contracts?accountId=csfm1993.testnet
-
-# GET http://localhost:3000/backupProjects?owner=csfm1993.testnet
-
-GET http://localhost:3000/allContracts?accountId=csfm1993.testnet
