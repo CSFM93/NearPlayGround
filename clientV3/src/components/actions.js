@@ -4,7 +4,6 @@ import { saveAs } from 'file-saver';
 const actions = {}
 const BASE_URL = import.meta.env.VITE_SERVER
 
-console.log('base: ', BASE_URL)
 
 //  CONTRACTS
 

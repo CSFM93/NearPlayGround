@@ -90,7 +90,7 @@ import { useQuasar } from "quasar";
 import "near-api-js/dist/near-api-js.min.js";
 const { connect, keyStores, WalletConnection } = window.nearApi;
 const keyStore = new keyStores.BrowserLocalStorageKeyStore();
-console.log("here", window.nearApi);
+
 const config = {
   networkId: "testnet",
   keyStore,

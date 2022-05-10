@@ -6,7 +6,7 @@ While participating in the Chainlink Fall Hackathon I spent a lot of time using 
 Near Playground  (NPG) is a developer tool that allows users to write, test, compile, deploy, and call Near smart contracts in the browser. NPG allows users to develop smart contracts in both Rust and AssemblyScript.
 NPG also allows the user to export the smart contract project by clicking the download button available in the file explorer.
 
-Live demo URL : http://161.35.237.45:3000
+
 
 Youtube demo URL : https://www.youtube.com/watch?v=qhUrogx9YuU
 

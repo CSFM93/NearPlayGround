@@ -18,6 +18,17 @@ let checkIfFileExists = (path) => {
     }
 }
 
+let createUserDirectory = (path) => {
+    try {
+        let createdDirectory = fs.mkdirSync(path, { recursive: true })
+        console.log('create user directory', createdDirectory)
+        return true
+    } catch (error) {
+        console.log('error creating path', error)
+        return false
+    }
+}
+
 
 let createProjectDirectory = (projectPath, templatePath) => {
     try {
@@ -270,6 +281,6 @@ module.exports = {
     saveText, getFileTree, getCompiledContract, createFile,
     deleteFile, renameFile, downloadProject, downloadProjectAssembly, getText,
     createProjectDirectory, deleteProjectDirectory, copyFolder, getManifest, checkIfFileExists,
-    backupProjects, restoreBackup
+    backupProjects, restoreBackup, createUserDirectory
 }
 
